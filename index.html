@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Percepción Vecinal - Santa Rosa</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Encuesta de Percepción Vecinal</h1>
+            <p>Municipalidad de Santa Rosa</p>
+        </header>
+
+        <div class="card">
+            <h2>BLOQUE 0 - Seleccionar área de encuesta</h2>
+            
+            <div class="form-group">
+                <label for="zonaPrincipal">Zona Principal:</label>
+                <select id="zonaPrincipal" required>
+                    <option value="">Seleccione una zona...</option>
+                    <option value="norte">🟨 NORTE</option>
+                    <option value="centro">🟧 CENTRO</option>
+                    <option value="sur">🟦 SUR</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subZona">Subzona:</label>
+                <select id="subZona" required disabled>
+                    <option value="">Primero seleccione una zona</option>
+                </select>
+            </div>
+
+            <!-- Subzona especial para La Costanera -->
+            <div id="costaneraInfo" style="display:none;">
+                <div class="form-group">
+                    <label for="numeroCuadra">Número de cuadra (1-25):</label>
+                    <input type="number" id="numeroCuadra" min="1" max="25" placeholder="Ingrese el número de cuadra">
+                </div>
+                <div class="cuadras-diagram">
+                    <p>Diagrama de cuadras:</p>
+                    <div class="cuadras-grid" id="cuadrasGrid"></div>
+                </div>
+            </div>
+
+            <button id="btnIniciarEncuesta" class="btn-primary" disabled>Iniciar Encuesta</button>
+        </div>
+
+        <div class="info-extra">
+            <p><strong>Estimación de viviendas:</strong> <span id="estimacionViviendas">-</span></p>
+        </div>
+    </div>
+
+    <script src="js/encuesta.js"></script>
+</body>
+</html>

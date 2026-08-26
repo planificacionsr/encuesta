@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta - Percepción Vecinal</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Encuesta de Percepción Vecinal</h1>
+            <p>Municipalidad de Santa Rosa</p>
+        </header>
+
+        <div class="encuesta-progress">
+            <span>Zona: <strong id="zonaSeleccionada">-</strong></span>
+            <span>Subzona: <strong id="subzonaSeleccionada">-</strong></span>
+            <span>N° Encuesta: <strong id="numeroEncuesta">#001</strong></span>
+        </div>
+
+        <form id="formEncuesta">
+            <!-- BLOQUE 1 — Servicios y limpieza -->
+            <div class="bloque">
+                <h2>BLOQUE 1 — Servicios y limpieza</h2>
+                
+                <div class="pregunta">
+                    <p><strong>1.</strong> ¿Conoce los días y horarios de la recolección domiciliaria y del servicio de residuos secos de los jueves?</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p1" value="ambos"> Sí, conozco ambos</label>
+                        <label><input type="radio" name="p1" value="domiciliaria"> Solo conozco la recolección domiciliaria común</label>
+                        <label><input type="radio" name="p1" value="secos"> Solo conozco la recolección de secos (jueves)</label>
+                        <label><input type="radio" name="p1" value="ninguno"> No conozco ninguno</label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>2.</strong> ¿Cómo califica la recolección de residuos domiciliarios en su barrio?</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p2" value="muy-bueno"> Muy bueno / Bueno</label>
+                        <label><input type="radio" name="p2" value="regular"> Regular</label>
+                        <label><input type="radio" name="p2" value="malo"> Malo / Muy malo</label>
+                        <label><input type="radio" name="p2" value="nsnr"> NS/NR</label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>3.</strong> ¿Separa los residuos secos en su casa para sacarlos los jueves?</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p3" value="si"> Sí, siempre o casi siempre</label>
+                        <label><input type="radio" name="p3" value="no-conoce"> No, porque no conozco el servicio o no sé cómo separar</label>
+                        <label><input type="radio" name="p3" value="no-otros"> No, por otros motivos (horarios, falta de confianza, etc.)</label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>4.</strong> ¿Cómo califica la limpieza general de su barrio? (calles, acequias, plazas)</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p4" value="muy-bueno"> Muy bueno / Bueno</label>
+                        <label><input type="radio" name="p4" value="regular"> Regular</label>
+                        <label><input type="radio" name="p4" value="malo"> Malo / Muy malo</label>
+                        <label><input type="radio" name="p4" value="nsnr"> NS/NR</label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>5.</strong> ¿Cómo evalúa el estado de la luminaria en su barrio?</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p5" value="muy-bueno"> Muy bueno / Bueno</label>
+                        <label><input type="radio" name="p5" value="regular"> Regular</label>
+                        <label><input type="radio" name="p5" value="malo"> Malo / Muy malo</label>
+                        <label><input type="radio" name="p5" value="nsnr"> NS/NR</label>
+                    </div>
+                </div>
+
+                <div class="pregunta" id="preguntaAbierta1" style="display:none;">
+                    <p><strong>→</strong> ¿Cuál es el motivo principal de su disconformidad?</p>
+                    <textarea name="p5_motivo" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                </div>
+            </div>
+
+            <!-- BLOQUE 2 — Operativos territoriales -->
+            <div class="bloque">
+                <h2>BLOQUE 2 — Operativos territoriales</h2>
+                
+                <div class="pregunta">
+                    <p><strong>6.</strong> ¿Participó alguna vez de un operativo territorial del municipio en su barrio?</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p6" value="si"> Sí</label>
+                        <label><input type="radio" name="p6" value="no"> No</label>
+                    </div>
+                </div>
+
+                <div id="bloque2Continuacion" style="display:none;">
+                    <div class="pregunta">
+                        <p><strong>7.</strong> ¿Qué servicios utilizó? (puede marcar más de uno)</p>
+                        <div class="opciones">
+                            <label><input type="checkbox" name="p7_salud" value="salud"> Salud</label>
+                            <label><input type="checkbox" name="p7_doc" value="documentacion"> Documentación</label>
+                            <label><input type="checkbox" name="p7_legal" value="legal"> Asesoramiento legal</label>
+                            <label><input type="text" name="p7_otro" placeholder="Otro:"></label>
+                        </div>
+                    </div>
+
+                    <div class="pregunta">
+                        <p><strong>8.</strong> ¿Cómo evalúa la atención recibida?</p>
+                        <div class="opciones">
+                            <label><input type="radio" name="p8" value="muy-buena"> Muy buena / Buena</label>
+                            <label><input type="radio" name="p8" value="regular"> Regular</label>
+                            <label><input type="radio" name="p8" value="mala"> Mala / Muy mala</label>
+                            <label><input type="radio" name="p8" value="nsnr"> NS/NR</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3 — Problemáticas -->
+            <div class="bloque">
+                <h2>BLOQUE 3 — Problemáticas</h2>
+                
+                <div class="pregunta">
+                    <p><strong>9.</strong> ¿Cuáles considera que son los tres principales problemas del departamento de Santa Rosa? (Indique el orden: 1 el más importante)</p>
+                    <div class="ranking">
+                        <select name="p9_1">
+                            <option value="">Seleccione el 1° problema...</option>
+                            <option value="trabajo">Falta de trabajo / empleo</option>
+                            <option value="inseguridad">Inseguridad</option>
+                            <option value="agua">Acceso al agua potable</option>
+                            <option value="limpieza">Limpieza y gestión de residuos</option>
+                            <option value="contaminacion">Contaminación / problemas ambientales</option>
+                            <option value="calles">Estado de calles y caminos</option>
+                            <option value="educacion">Falta de ofertas educativas</option>
+                            <option value="iluminacion">Falta o deterioro de iluminación</option>
+                            <option value="infraestructura">Falta o deterioro de infraestructura y servicios</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        <select name="p9_2">
+                            <option value="">Seleccione el 2° problema...</option>
+                            <option value="trabajo">Falta de trabajo / empleo</option>
+                            <option value="inseguridad">Inseguridad</option>
+                            <option value="agua">Acceso al agua potable</option>
+                            <option value="limpieza">Limpieza y gestión de residuos</option>
+                            <option value="contaminacion">Contaminación / problemas ambientales</option>
+                            <option value="calles">Estado de calles y caminos</option>
+                            <option value="educacion">Falta de ofertas educativas</option>
+                            <option value="iluminacion">Falta o deterioro de iluminación</option>
+                            <option value="infraestructura">Falta o deterioro de infraestructura y servicios</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                        <select name="p9_3">
+                            <option value="">Seleccione el 3° problema...</option>
+                            <option value="trabajo">Falta de trabajo / empleo</option>
+                            <option value="inseguridad">Inseguridad</option>
+                            <option value="agua">Acceso al agua potable</option>
+                            <option value="limpieza">Limpieza y gestión de residuos</option>
+                            <option value="contaminacion">Contaminación / problemas ambientales</option>
+                            <option value="calles">Estado de calles y caminos</option>
+                            <option value="educacion">Falta de ofertas educativas</option>
+                            <option value="iluminacion">Falta o deterioro de iluminación</option>
+                            <option value="infraestructura">Falta o deterioro de infraestructura y servicios</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>10.</strong> ¿Cuál considera que es el principal problema de su barrio? (una sola opción)</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p10" value="inseguridad"> Inseguridad</label>
+                        <label><input type="radio" name="p10" value="limpieza"> Falta de limpieza</label>
+                        <label><input type="radio" name="p10" value="agua"> Problemas con el agua potable</label>
+                        <label><input type="radio" name="p10" value="calles"> Estado de calles y caminos</label>
+                        <label><input type="radio" name="p10" value="contaminacion"> Contaminación / problemas ambientales</label>
+                        <label><input type="radio" name="p10" value="iluminacion"> Falta o deterioro de iluminación</label>
+                        <label><input type="radio" name="p10" value="servicios"> Falta de otros servicios o infraestructura</label>
+                        <label><input type="radio" name="p10" value="otro"> Otro: <input type="text" name="p10_otro" placeholder="Especifique"></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>11.</strong> ¿Por qué considera que ese es el principal problema de su barrio?</p>
+                    <textarea name="p11" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                </div>
+            </div>
+
+            <!-- BLOQUE 4 — Obras e intervenciones -->
+            <div class="bloque">
+                <h2>BLOQUE 4 — Obras e intervenciones</h2>
+                
+                <div class="pregunta">
+                    <p><strong>12.</strong> ¿Cuál de las siguientes obras considera más relevante para el departamento? (una sola opción)</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p12" value="ruta50"> Repavimentación de Ruta Provincial 50</label>
+                        <label><input type="radio" name="p12" value="planta"> Planta de transferencia de residuos y erradicación del basural a cielo abierto</label>
+                        <label><input type="radio" name="p12" value="auditorio"> Auditorio Municipal</label>
+                        <label><input type="radio" name="p12" value="parque"> Parque Ventura Segura</label>
+                        <label><input type="radio" name="p12" value="otro"> Otra: <input type="text" name="p12_otro" placeholder="Especifique"></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>13.</strong> ¿Por qué considera que esa obra es la más relevante?</p>
+                    <textarea name="p13" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>14.</strong> ¿Cuál de las siguientes intervenciones considera más importante para su barrio? (una sola opción)</p>
+                    <div class="opciones">
+                        <label><input type="radio" name="p14" value="plaza"> Remodelación de plaza y juegos</label>
+                        <label><input type="radio" name="p14" value="led"> Instalación de luminarias LED en La Costanera</label>
+                        <label><input type="radio" name="p14" value="otro"> Otra: <input type="text" name="p14_otro" placeholder="Especifique"></label>
+                        <label><input type="radio" name="p14" value="ninguna"> Ninguna</label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>15.</strong> ¿Por qué considera que esa intervención fue la más importante?</p>
+                    <textarea name="p15" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                </div>
+            </div>
+
+            <!-- BLOQUE 5 — Sugerencias -->
+            <div class="bloque">
+                <h2>BLOQUE 5 — Sugerencias</h2>
+                
+                <div class="pregunta">
+                    <p><strong>16.</strong> ¿Qué servicio o mejora considera prioritaria para su barrio?</p>
+                    <textarea name="p16" rows="4" placeholder="Registre textualmente la respuesta..."></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="btnGuardar" class="btn-primary">💾 Guardar Encuesta</button>
+                <button type="reset" class="btn-secondary">Limpiar Formulario</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/encuesta.js"></script>
+</body>
+</html>

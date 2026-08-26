@@ -1,0 +1,30 @@
+{
+    "norte": {
+        "nombre": "NORTE",
+        "estimacion": 350,
+        "subzonas": [
+            "Arenas",
+            "Los Espinillos/SUTE",
+            "San Cayetano",
+            "Guiñazú Norte y Colectora"
+        ]
+    },
+    "centro": {
+        "nombre": "CENTRO",
+        "estimacion": 300,
+        "subzonas": [
+            "B° Jardín",
+            "Calle Eliseo Ortiz",
+            "Centro"
+        ]
+    },
+    "sur": {
+        "nombre": "SUR",
+        "estimacion": 420,
+        "subzonas": [
+            "La Costanera (Dividido en 25 Cuadras)",
+            "Las Chircas",
+            "Cuadro Estación"
+        ]
+    }
+}
