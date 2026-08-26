@@ -57,12 +57,20 @@ function actualizarNumeroEncuesta() {
 
 // Inicializar la página principal (index.html)
 function initPaginaPrincipal() {
+    console.log('Inicializando página principal...');
+    
     const zonaSelect = document.getElementById('zonaPrincipal');
     const subZonaSelect = document.getElementById('subZona');
     const btnIniciar = document.getElementById('btnIniciarEncuesta');
     const estimacionSpan = document.getElementById('estimacionViviendas');
     const costaneraInfo = document.getElementById('costaneraInfo');
     const cuadrasGrid = document.getElementById('cuadrasGrid');
+
+    // Verificar que los elementos existan
+    if (!zonaSelect || !subZonaSelect || !btnIniciar) {
+        console.error('No se encontraron todos los elementos necesarios en la página');
+        return;
+    }
 
     // Generar diagrama de cuadras para La Costanera
     if (cuadrasGrid) {
@@ -74,7 +82,9 @@ function initPaginaPrincipal() {
             div.onclick = function() {
                 document.querySelectorAll('.cuadra-item').forEach(el => el.classList.remove('seleccionada'));
                 this.classList.add('seleccionada');
-                document.getElementById('numeroCuadra').value = i;
+                const numCuadra = document.getElementById('numeroCuadra');
+                if (numCuadra) numCuadra.value = i;
+                verificarHabilitarBoton();
             };
             cuadrasGrid.appendChild(div);
         }
@@ -82,19 +92,21 @@ function initPaginaPrincipal() {
 
     // Evento cambio de zona principal
     zonaSelect.addEventListener('change', function() {
+        console.log('Zona seleccionada:', this.value);
         const zona = this.value;
         zonaSeleccionada = zona;
         
         // Limpiar subzonas
         subZonaSelect.innerHTML = '<option value="">Seleccione una subzona...</option>';
         subZonaSelect.disabled = true;
-        costaneraInfo.style.display = 'none';
+        if (costaneraInfo) costaneraInfo.style.display = 'none';
         
         if (zona && zonasData[zona]) {
             const data = zonasData[zona];
-            estimacionSpan.textContent = data.estimacion;
+            if (estimacionSpan) estimacionSpan.textContent = data.estimacion;
             
             // Cargar subzonas
+            console.log('Cargando subzonas para:', zona);
             data.subzonas.forEach(sub => {
                 const option = document.createElement('option');
                 option.value = sub;
@@ -106,10 +118,10 @@ function initPaginaPrincipal() {
             
             // Si es SUR, mostrar info de Costanera
             if (zona === 'sur') {
-                costaneraInfo.style.display = 'block';
+                if (costaneraInfo) costaneraInfo.style.display = 'block';
             }
         } else {
-            estimacionSpan.textContent = '-';
+            if (estimacionSpan) estimacionSpan.textContent = '-';
         }
         
         verificarHabilitarBoton();
@@ -117,6 +129,7 @@ function initPaginaPrincipal() {
 
     // Evento cambio de subzona
     subZonaSelect.addEventListener('change', function() {
+        console.log('Subzona seleccionada:', this.value);
         subzonaSeleccionada = this.value;
         verificarHabilitarBoton();
     });
@@ -142,7 +155,8 @@ function initPaginaPrincipal() {
         let cuadra = '';
         
         if (zona === 'sur' && subzona === 'La Costanera (Dividido en 25 Cuadras)') {
-            cuadra = document.getElementById('numeroCuadra').value;
+            const numCuadra = document.getElementById('numeroCuadra');
+            if (numCuadra) cuadra = numCuadra.value;
             if (!cuadra || cuadra < 1 || cuadra > 25) {
                 alert('Por favor, seleccione un número de cuadra (1-25)');
                 return;
@@ -158,6 +172,9 @@ function initPaginaPrincipal() {
         // Redirigir a la encuesta
         window.location.href = 'encuesta.html';
     });
+
+    // Verificar estado inicial
+    verificarHabilitarBoton();
 }
 
 // Función para verificar si el botón de iniciar debe estar habilitado
@@ -167,13 +184,19 @@ function verificarHabilitarBoton() {
     const btnIniciar = document.getElementById('btnIniciarEncuesta');
     const numeroCuadra = document.getElementById('numeroCuadra');
     
+    if (!zonaSelect || !subZonaSelect || !btnIniciar) {
+        return;
+    }
+    
     let habilitado = false;
     
     if (zonaSelect.value && subZonaSelect.value) {
         if (zonaSelect.value === 'sur' && subZonaSelect.value === 'La Costanera (Dividido en 25 Cuadras)') {
-            const val = parseInt(numeroCuadra.value);
-            if (val >= 1 && val <= 25) {
-                habilitado = true;
+            if (numeroCuadra) {
+                const val = parseInt(numeroCuadra.value);
+                if (val >= 1 && val <= 25) {
+                    habilitado = true;
+                }
             }
         } else {
             habilitado = true;
@@ -185,15 +208,21 @@ function verificarHabilitarBoton() {
 
 // Inicializar la página de encuesta (encuesta.html)
 function initPaginaEncuesta() {
+    console.log('Inicializando página de encuesta...');
+    
     // Mostrar zona y subzona seleccionadas
     const zona = sessionStorage.getItem('zonaEncuesta') || 'No seleccionada';
     const subzona = sessionStorage.getItem('subzonaEncuesta') || 'No seleccionada';
     const cuadra = sessionStorage.getItem('cuadraEncuesta') || '';
     const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
     
-    document.getElementById('zonaSeleccionada').textContent = zonasData[zona]?.nombre || zona;
-    document.getElementById('subzonaSeleccionada').textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
-    document.getElementById('numeroEncuesta').textContent = `#${String(numEncuesta).padStart(3, '0')}`;
+    const zonaElem = document.getElementById('zonaSeleccionada');
+    const subzonaElem = document.getElementById('subzonaSeleccionada');
+    const numElem = document.getElementById('numeroEncuesta');
+    
+    if (zonaElem) zonaElem.textContent = zonasData[zona]?.nombre || zona;
+    if (subzonaElem) subzonaElem.textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
+    if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
 
     // Mostrar pregunta abierta si se selecciona Regular, Malo o Muy malo
     const preguntasCalificacion = ['p2', 'p4', 'p5'];
@@ -201,12 +230,14 @@ function initPaginaEncuesta() {
         document.querySelectorAll(`input[name="${id}"]`).forEach(radio => {
             radio.addEventListener('change', function() {
                 const motivoDiv = document.getElementById('preguntaAbierta1');
-                if (['regular', 'malo'].includes(this.value)) {
-                    motivoDiv.style.display = 'block';
-                } else if (this.value === 'muy-bueno' || this.value === 'nsnr') {
-                    if (!document.querySelector(`input[name="${id}"]:checked`) || 
-                        ['muy-bueno', 'nsnr'].includes(document.querySelector(`input[name="${id}"]:checked`).value)) {
-                        motivoDiv.style.display = 'none';
+                if (motivoDiv) {
+                    if (['regular', 'malo'].includes(this.value)) {
+                        motivoDiv.style.display = 'block';
+                    } else if (this.value === 'muy-bueno' || this.value === 'nsnr') {
+                        if (!document.querySelector(`input[name="${id}"]:checked`) || 
+                            ['muy-bueno', 'nsnr'].includes(document.querySelector(`input[name="${id}"]:checked`).value)) {
+                            motivoDiv.style.display = 'none';
+                        }
                     }
                 }
             });
@@ -217,17 +248,22 @@ function initPaginaEncuesta() {
     document.querySelectorAll('input[name="p6"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const continuacion = document.getElementById('bloque2Continuacion');
-            continuacion.style.display = this.value === 'si' ? 'block' : 'none';
+            if (continuacion) {
+                continuacion.style.display = this.value === 'si' ? 'block' : 'none';
+            }
         });
     });
 
     // Botón guardar
-    document.getElementById('btnGuardar').addEventListener('click', function() {
-        if (validarFormulario()) {
-            const datos = recolectarDatos();
-            guardarDatos(datos);
-        }
-    });
+    const btnGuardar = document.getElementById('btnGuardar');
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', function() {
+            if (validarFormulario()) {
+                const datos = recolectarDatos();
+                guardarDatos(datos);
+            }
+        });
+    }
 }
 
 // Función para validar el formulario
@@ -310,17 +346,12 @@ function guardarDatos(datos) {
     encuestas.push(datos);
     localStorage.setItem('encuestas', JSON.stringify(encuestas));
     
-    // Descargar como CSV (opcional)
-    descargarCSV(datos);
-    
     // Redirigir a página de agradecimiento
     window.location.href = 'gracias.html';
 }
 
 // Función para descargar CSV (puede exportar todas las encuestas)
 function descargarCSV(datos) {
-    // Esto es opcional - puedes implementar descarga automática
-    // o simplemente guardar en localStorage y luego exportar manualmente
     console.log('Datos guardados:', datos);
     
     // Actualizar el número de encuesta para la próxima
@@ -337,6 +368,7 @@ function exportarEncuestasCSV() {
         return;
     }
     
+    // Obtener todas las claves de la primera encuesta
     const headers = Object.keys(encuestas[0]);
     let csv = headers.join(',') + '\n';
     
@@ -357,22 +389,38 @@ function exportarEncuestasCSV() {
     a.click();
 }
 
-// Inicializar según la página
+// ===== INICIALIZACIÓN PRINCIPAL =====
+// Esta es la parte más importante - detecta qué página se está cargando
 document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
-        initPaginaPrincipal();
-    } else if (window.location.pathname.includes('encuesta.html')) {
+    console.log('DOM cargado completamente');
+    
+    // Obtener la ruta actual
+    const path = window.location.pathname;
+    console.log('Ruta actual:', path);
+    
+    // Detectar qué página estamos viendo
+    if (path.includes('encuesta.html')) {
+        console.log('Página detectada: encuesta.html');
         initPaginaEncuesta();
-    } else if (window.location.pathname.includes('gracias.html')) {
+    } else if (path.includes('gracias.html')) {
+        console.log('Página detectada: gracias.html');
         // Mostrar información de la encuesta completada
         const zona = sessionStorage.getItem('zonaEncuesta') || 'No especificada';
         const subzona = sessionStorage.getItem('subzonaEncuesta') || 'No especificada';
         const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
         const cuadra = sessionStorage.getItem('cuadraEncuesta') || '';
         
-        document.getElementById('encuestaNumero').textContent = `#${String(numEncuesta).padStart(3, '0')}`;
-        document.getElementById('encuestaZona').textContent = zonasData[zona]?.nombre || zona;
-        document.getElementById('encuestaSubzona').textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
+        const numElem = document.getElementById('encuestaNumero');
+        const zonaElem = document.getElementById('encuestaZona');
+        const subzonaElem = document.getElementById('encuestaSubzona');
+        
+        if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
+        if (zonaElem) zonaElem.textContent = zonasData[zona]?.nombre || zona;
+        if (subzonaElem) subzonaElem.textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
+    } else {
+        // Por defecto, asumimos que es index.html
+        console.log('Página detectada: index.html (por defecto)');
+        initPaginaPrincipal();
     }
 });
 
