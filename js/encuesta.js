@@ -1,4 +1,4 @@
-// Datos de las zonas (también en data/zonas.json)
+// Datos de las zonas
 const zonasData = {
     norte: {
         nombre: 'NORTE',
@@ -40,6 +40,8 @@ function cargarNumeroEncuesta() {
     const guardado = localStorage.getItem('numeroEncuesta');
     if (guardado) {
         numeroEncuesta = parseInt(guardado) + 1;
+    } else {
+        numeroEncuesta = 1;
     }
     localStorage.setItem('numeroEncuesta', numeroEncuesta.toString());
     return numeroEncuesta;
@@ -66,7 +68,6 @@ function initPaginaPrincipal() {
     const costaneraInfo = document.getElementById('costaneraInfo');
     const cuadrasGrid = document.getElementById('cuadrasGrid');
 
-    // Verificar que los elementos existan
     if (!zonaSelect || !subZonaSelect || !btnIniciar) {
         console.error('No se encontraron todos los elementos necesarios en la página');
         return;
@@ -96,7 +97,6 @@ function initPaginaPrincipal() {
         const zona = this.value;
         zonaSeleccionada = zona;
         
-        // Limpiar subzonas
         subZonaSelect.innerHTML = '<option value="">Seleccione una subzona...</option>';
         subZonaSelect.disabled = true;
         if (costaneraInfo) costaneraInfo.style.display = 'none';
@@ -105,7 +105,6 @@ function initPaginaPrincipal() {
             const data = zonasData[zona];
             if (estimacionSpan) estimacionSpan.textContent = data.estimacion;
             
-            // Cargar subzonas
             console.log('Cargando subzonas para:', zona);
             data.subzonas.forEach(sub => {
                 const option = document.createElement('option');
@@ -116,7 +115,6 @@ function initPaginaPrincipal() {
             
             subZonaSelect.disabled = false;
             
-            // Si es SUR, mostrar info de Costanera
             if (zona === 'sur') {
                 if (costaneraInfo) costaneraInfo.style.display = 'block';
             }
@@ -163,17 +161,23 @@ function initPaginaPrincipal() {
             }
         }
         
-        // Guardar en sessionStorage para usarlo en encuesta.html
+        // Guardar en sessionStorage
         sessionStorage.setItem('zonaEncuesta', zona);
         sessionStorage.setItem('subzonaEncuesta', subzona);
         sessionStorage.setItem('cuadraEncuesta', cuadra);
-        sessionStorage.setItem('numeroEncuesta', actualizarNumeroEncuesta());
         
-        // Redirigir a la encuesta
+        // Generar número de encuesta
+        const numEncuesta = cargarNumeroEncuesta();
+        sessionStorage.setItem('numeroEncuesta', numEncuesta.toString());
+        
+        console.log('Datos guardados en sessionStorage:', {
+            zona, subzona, cuadra, numero: numEncuesta
+        });
+        
+        // Redirigir
         window.location.href = 'encuesta.html';
     });
 
-    // Verificar estado inicial
     verificarHabilitarBoton();
 }
 
@@ -254,15 +258,23 @@ function initPaginaEncuesta() {
         });
     });
 
-    // Botón guardar
+    // Botón guardar - AHORA CON MEJOR MANEJO DE ERRORES
     const btnGuardar = document.getElementById('btnGuardar');
     if (btnGuardar) {
         btnGuardar.addEventListener('click', function() {
+            console.log('Botón guardar clickeado');
+            
             if (validarFormulario()) {
+                console.log('Formulario válido, recolectando datos...');
                 const datos = recolectarDatos();
+                console.log('Datos recolectados:', datos);
                 guardarDatos(datos);
+            } else {
+                console.log('Formulario no válido');
             }
         });
+    } else {
+        console.error('No se encontró el botón guardar');
     }
 }
 
@@ -271,11 +283,12 @@ function validarFormulario() {
     const camposRequeridos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p10', 'p12', 'p14'];
     let valid = true;
     let mensaje = 'Por favor, complete los siguientes campos:\n';
+    let camposFaltantes = [];
     
     camposRequeridos.forEach(id => {
         const seleccionado = document.querySelector(`input[name="${id}"]:checked`);
         if (!seleccionado) {
-            mensaje += `- Pregunta ${id.replace('p', '')}\n`;
+            camposFaltantes.push(id.replace('p', ''));
             valid = false;
         }
     });
@@ -284,13 +297,13 @@ function validarFormulario() {
     for (let i = 1; i <= 3; i++) {
         const select = document.querySelector(`select[name="p9_${i}"]`);
         if (!select || !select.value) {
-            mensaje += `- Pregunta 9 - Problema #${i}\n`;
+            camposFaltantes.push(`9.${i}`);
             valid = false;
         }
     }
     
     if (!valid) {
-        alert(mensaje);
+        alert(`Por favor, complete todos los campos obligatorios:\n- Preguntas: ${camposFaltantes.join(', ')}`);
         return false;
     }
     
@@ -299,112 +312,174 @@ function validarFormulario() {
 
 // Función para recolectar datos del formulario
 function recolectarDatos() {
+    // Obtener la zona y subzona del sessionStorage
+    const zona = sessionStorage.getItem('zonaEncuesta') || '';
+    const subzona = sessionStorage.getItem('subzonaEncuesta') || '';
+    const cuadra = sessionStorage.getItem('cuadraEncuesta') || '';
+    const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
+    
+    // Recolectar respuestas
     const datos = {
+        // Metadatos
         fecha: new Date().toISOString(),
-        zona: sessionStorage.getItem('zonaEncuesta'),
-        subzona: sessionStorage.getItem('subzonaEncuesta'),
-        cuadra: sessionStorage.getItem('cuadraEncuesta'),
-        numeroEncuesta: sessionStorage.getItem('numeroEncuesta'),
+        numeroEncuesta: numEncuesta,
+        zona: zona,
+        zonaNombre: zonasData[zona]?.nombre || zona,
+        subzona: subzona,
+        cuadra: cuadra,
+        
+        // Bloque 1
         p1: document.querySelector('input[name="p1"]:checked')?.value || '',
         p2: document.querySelector('input[name="p2"]:checked')?.value || '',
         p3: document.querySelector('input[name="p3"]:checked')?.value || '',
         p4: document.querySelector('input[name="p4"]:checked')?.value || '',
         p5: document.querySelector('input[name="p5"]:checked')?.value || '',
         p5_motivo: document.querySelector('textarea[name="p5_motivo"]')?.value || '',
+        
+        // Bloque 2
         p6: document.querySelector('input[name="p6"]:checked')?.value || '',
-        p7: {
-            salud: document.querySelector('input[name="p7_salud"]')?.checked || false,
-            documentacion: document.querySelector('input[name="p7_doc"]')?.checked || false,
-            legal: document.querySelector('input[name="p7_legal"]')?.checked || false,
-            otro: document.querySelector('input[name="p7_otro"]')?.value || ''
-        },
+        p7_salud: document.querySelector('input[name="p7_salud"]')?.checked || false,
+        p7_documentacion: document.querySelector('input[name="p7_doc"]')?.checked || false,
+        p7_legal: document.querySelector('input[name="p7_legal"]')?.checked || false,
+        p7_otro: document.querySelector('input[name="p7_otro"]')?.value || '',
         p8: document.querySelector('input[name="p8"]:checked')?.value || '',
-        p9: {
-            problema1: document.querySelector('select[name="p9_1"]')?.value || '',
-            problema2: document.querySelector('select[name="p9_2"]')?.value || '',
-            problema3: document.querySelector('select[name="p9_3"]')?.value || ''
-        },
+        
+        // Bloque 3
+        p9_1: document.querySelector('select[name="p9_1"]')?.value || '',
+        p9_2: document.querySelector('select[name="p9_2"]')?.value || '',
+        p9_3: document.querySelector('select[name="p9_3"]')?.value || '',
         p10: document.querySelector('input[name="p10"]:checked')?.value || '',
         p10_otro: document.querySelector('input[name="p10_otro"]')?.value || '',
         p11: document.querySelector('textarea[name="p11"]')?.value || '',
+        
+        // Bloque 4
         p12: document.querySelector('input[name="p12"]:checked')?.value || '',
         p12_otro: document.querySelector('input[name="p12_otro"]')?.value || '',
         p13: document.querySelector('textarea[name="p13"]')?.value || '',
         p14: document.querySelector('input[name="p14"]:checked')?.value || '',
         p14_otro: document.querySelector('input[name="p14_otro"]')?.value || '',
         p15: document.querySelector('textarea[name="p15"]')?.value || '',
+        
+        // Bloque 5
         p16: document.querySelector('textarea[name="p16"]')?.value || ''
     };
     
     return datos;
 }
 
-// Función para guardar datos
+// Función para guardar datos - AHORA CON VERIFICACIONES
 function guardarDatos(datos) {
-    // Obtener datos existentes de localStorage
-    let encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
-    encuestas.push(datos);
-    localStorage.setItem('encuestas', JSON.stringify(encuestas));
-    
-    // Redirigir a página de agradecimiento
-    window.location.href = 'gracias.html';
+    try {
+        console.log('Intentando guardar datos...');
+        
+        // Obtener datos existentes
+        let encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
+        console.log(`Encuestas existentes: ${encuestas.length}`);
+        
+        // Agregar nueva encuesta
+        encuestas.push(datos);
+        
+        // Guardar en localStorage
+        localStorage.setItem('encuestas', JSON.stringify(encuestas));
+        console.log(`✅ Encuesta guardada correctamente. Total: ${encuestas.length}`);
+        
+        // Mostrar mensaje de éxito
+        alert(`✅ Encuesta #${datos.numeroEncuesta} guardada correctamente!\nTotal de encuestas: ${encuestas.length}`);
+        
+        // Redirigir a página de agradecimiento
+        window.location.href = 'gracias.html';
+        
+    } catch (error) {
+        console.error('❌ Error al guardar:', error);
+        alert('❌ Error al guardar la encuesta. Por favor, intente nuevamente.');
+    }
 }
 
-// Función para descargar CSV (puede exportar todas las encuestas)
-function descargarCSV(datos) {
-    console.log('Datos guardados:', datos);
-    
-    // Actualizar el número de encuesta para la próxima
-    const numActual = parseInt(sessionStorage.getItem('numeroEncuesta') || '0');
-    const nuevoNum = numActual + 1;
-    sessionStorage.setItem('numeroEncuesta', nuevoNum.toString());
-}
-
-// Función para exportar todas las encuestas a CSV (para usar desde consola)
+// Función para exportar todas las encuestas a CSV
 function exportarEncuestasCSV() {
     const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
+    
     if (encuestas.length === 0) {
-        alert('No hay encuestas guardadas');
+        alert('📭 No hay encuestas guardadas para exportar');
         return;
     }
     
-    // Obtener todas las claves de la primera encuesta
-    const headers = Object.keys(encuestas[0]);
-    let csv = headers.join(',') + '\n';
+    // Definir columnas para el CSV
+    const columnas = [
+        'numeroEncuesta', 'fecha', 'zonaNombre', 'subzona', 'cuadra',
+        'p1', 'p2', 'p3', 'p4', 'p5', 'p5_motivo',
+        'p6', 'p7_salud', 'p7_documentacion', 'p7_legal', 'p7_otro', 'p8',
+        'p9_1', 'p9_2', 'p9_3', 'p10', 'p10_otro', 'p11',
+        'p12', 'p12_otro', 'p13', 'p14', 'p14_otro', 'p15',
+        'p16'
+    ];
+    
+    // Crear CSV
+    let csv = columnas.join(',') + '\n';
     
     encuestas.forEach(enc => {
-        const row = headers.map(h => {
-            let val = enc[h];
-            if (typeof val === 'object') val = JSON.stringify(val);
-            return `"${String(val).replace(/"/g, '""')}"`;
+        const row = columnas.map(col => {
+            let val = enc[col] || '';
+            // Escapar comillas y comas
+            if (typeof val === 'string') {
+                val = val.replace(/"/g, '""');
+                if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+                    val = `"${val}"`;
+                }
+            }
+            return val;
         });
         csv += row.join(',') + '\n';
     });
     
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `encuestas_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click();
+    // Descargar archivo
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `encuestas_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert(`✅ Se exportaron ${encuestas.length} encuestas correctamente`);
+}
+
+// Función para ver cuántas encuestas hay guardadas (desde consola)
+function verEstadisticas() {
+    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
+    console.log(`📊 Total de encuestas guardadas: ${encuestas.length}`);
+    console.log('📋 Últimas 5 encuestas:', encuestas.slice(-5));
+    return {
+        total: encuestas.length,
+        ultimas: encuestas.slice(-5)
+    };
+}
+
+// Función para borrar todas las encuestas (con confirmación)
+function borrarTodasEncuestas() {
+    if (confirm('⚠️ ¿Estás seguro de borrar TODAS las encuestas guardadas?')) {
+        if (confirm('Confirmación final: ¿Borrar todas las encuestas?')) {
+            localStorage.removeItem('encuestas');
+            alert('✅ Todas las encuestas han sido borradas');
+            console.log('✅ Todas las encuestas borradas');
+        }
+    }
 }
 
 // ===== INICIALIZACIÓN PRINCIPAL =====
-// Esta es la parte más importante - detecta qué página se está cargando
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM cargado completamente');
+    console.log('Ruta actual:', window.location.pathname);
     
-    // Obtener la ruta actual
     const path = window.location.pathname;
-    console.log('Ruta actual:', path);
     
-    // Detectar qué página estamos viendo
     if (path.includes('encuesta.html')) {
         console.log('Página detectada: encuesta.html');
         initPaginaEncuesta();
     } else if (path.includes('gracias.html')) {
         console.log('Página detectada: gracias.html');
-        // Mostrar información de la encuesta completada
         const zona = sessionStorage.getItem('zonaEncuesta') || 'No especificada';
         const subzona = sessionStorage.getItem('subzonaEncuesta') || 'No especificada';
         const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
@@ -418,11 +493,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (zonaElem) zonaElem.textContent = zonasData[zona]?.nombre || zona;
         if (subzonaElem) subzonaElem.textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
     } else {
-        // Por defecto, asumimos que es index.html
         console.log('Página detectada: index.html (por defecto)');
         initPaginaPrincipal();
     }
 });
 
-// Hacer accesible la función de exportación desde consola
+// Funciones disponibles desde la consola
 window.exportarEncuestasCSV = exportarEncuestasCSV;
+window.verEstadisticas = verEstadisticas;
+window.borrarTodasEncuestas = borrarTodasEncuestas;
