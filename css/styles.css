@@ -1,132 +1,25 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f0f2f5;
-    padding: 20px;
-    color: #333;
-}
-
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-header {
-    text-align: center;
-    padding: 30px 0;
-    background: linear-gradient(135deg, #1a5276, #2e86c1);
-    color: white;
-    border-radius: 10px 10px 0 0;
-}
-
-header h1 {
-    font-size: 2em;
-    margin-bottom: 5px;
-}
-
-header p {
-    font-size: 1.1em;
-    opacity: 0.9;
-}
-
-.card {
-    background: white;
-    padding: 30px;
-    border-radius: 0 0 10px 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-.card h2 {
-    color: #1a5276;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #2e86c1;
-    padding-bottom: 10px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #2c3e50;
-}
-
-.form-group select,
-.form-group input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    font-size: 1em;
-    transition: border-color 0.3s;
-}
-
-.form-group select:focus,
-.form-group input:focus {
-    outline: none;
-    border-color: #2e86c1;
-}
-
-.form-group select:disabled {
-    background: #f5f5f5;
-    cursor: not-allowed;
-}
-
-.btn-primary {
-    background: #2e86c1;
-    color: white;
-    padding: 14px 30px;
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: all 0.3s;
-    width: 100%;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: #1a5276;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(46, 134, 193, 0.3);
-}
-
-.btn-primary:disabled {
-    background: #bdc3c7;
-    cursor: not-allowed;
-}
-
-.btn-secondary {
-    background: #95a5a6;
-    color: white;
-    padding: 14px 30px;
-    border: none;
-    border-radius: 6px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.btn-secondary:hover {
-    background: #7f8c8d;
-}
-
-.info-extra {
+/* Botón Volver */
+.btn-volver {
     background: #ecf0f1;
-    padding: 15px;
+    color: #2c3e50;
+    padding: 12px 25px;
+    border: 2px solid #bdc3c7;
     border-radius: 6px;
-    text-align: center;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Estilos para la encuesta */
+.btn-volver:hover {
+    background: #d5dbdb;
+    border-color: #95a5a6;
+    transform: translateX(-3px);
+}
+
+/* Mejora del indicador de zona */
 .encuesta-progress {
     background: #ecf0f1;
     padding: 15px 20px;
@@ -138,204 +31,20 @@ header p {
     gap: 10px;
 }
 
-.bloque {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    margin-bottom: 30px;
-    border-left: 4px solid #2e86c1;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.bloque h2 {
-    color: #1a5276;
-    margin-bottom: 25px;
-    font-size: 1.3em;
-}
-
-.pregunta {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.pregunta:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.pregunta p {
-    font-weight: 500;
-    margin-bottom: 12px;
-    color: #2c3e50;
-}
-
-.opciones {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-left: 10px;
-}
-
-.opciones label {
+.progress-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    padding: 8px 12px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.opciones label:hover {
-    background: #f7f9fa;
-}
-
-.opciones input[type="radio"],
-.opciones input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-
-.opciones input[type="text"] {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-left: 5px;
-}
-
-textarea {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    font-size: 1em;
-    font-family: inherit;
-    transition: border-color 0.3s;
-    resize: vertical;
-}
-
-textarea:focus {
-    outline: none;
-    border-color: #2e86c1;
-}
-
-.ranking {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.ranking select {
-    padding: 10px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
-    font-size: 1em;
-}
-
-.form-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    flex-wrap: wrap;
-}
-
-.form-actions button {
-    flex: 1;
-    min-width: 150px;
-}
-
-/* Cuadras diagram */
-.cuadras-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 8px;
-    margin-top: 10px;
 }
 
-.cuadra-item {
-    background: #ecf0f1;
-    padding: 10px;
-    text-align: center;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 500;
+.progress-label {
+    font-weight: 600;
+    color: #7f8c8d;
+    font-size: 0.9em;
 }
 
-.cuadra-item:hover {
-    background: #2e86c1;
-    color: white;
-    transform: scale(1.05);
-}
-
-.cuadra-item.seleccionada {
-    background: #2e86c1;
-    color: white;
-}
-
-/* Página de éxito */
-.success {
-    text-align: center;
-    padding: 50px 30px;
-}
-
-.icon {
-    font-size: 4em;
-    margin-bottom: 20px;
-}
-
-.info-box {
-    background: #ecf0f1;
-    padding: 20px;
-    border-radius: 8px;
-    margin: 25px 0;
-}
-
-.info-box p {
-    margin: 8px 0;
-}
-
-.acciones {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.acciones a {
-    text-decoration: none;
-    padding: 12px 25px;
-    border-radius: 6px;
-    transition: all 0.3s;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-    .container {
-        padding: 0;
-    }
-    
-    .card {
-        padding: 20px;
-    }
-    
-    .encuesta-progress {
-        flex-direction: column;
-        gap: 5px;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .cuadras-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    header h1 {
-        font-size: 1.5em;
-    }
+.progress-value {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 1em;
 }
