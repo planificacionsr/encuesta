@@ -20,6 +20,32 @@
         </div>
 
         <form id="formEncuesta">
+            <!-- BLOQUE 0 - Datos del entrevistado -->
+            <div class="bloque">
+                <h2>BLOQUE 0 — Datos del entrevistado</h2>
+                
+                <div class="pregunta">
+                    <p><strong>Sexo del entrevistado:</strong></p>
+                    <div class="opciones">
+                        <label><input type="radio" name="sexo" value="masculino"> Masculino</label>
+                        <label><input type="radio" name="sexo" value="femenino"> Femenino</label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <p><strong>Rango etario:</strong></p>
+                    <div class="opciones">
+                        <label><input type="radio" name="edad" value="18-25"> 18 a 25 años</label>
+                        <label><input type="radio" name="edad" value="26-35"> 26 a 35 años</label>
+                        <label><input type="radio" name="edad" value="36-45"> 36 a 45 años</label>
+                        <label><input type="radio" name="edad" value="46-55"> 46 a 55 años</label>
+                        <label><input type="radio" name="edad" value="56-65"> 56 a 65 años</label>
+                        <label><input type="radio" name="edad" value="66-75"> 66 a 75 años</label>
+                        <label><input type="radio" name="edad" value="76-100"> 76 a 100 años</label>
+                    </div>
+                </div>
+            </div>
+
             <!-- BLOQUE 1 — Servicios y limpieza -->
             <div class="bloque">
                 <h2>BLOQUE 1 — Servicios y limpieza</h2>
@@ -98,7 +124,7 @@
                             <label><input type="checkbox" name="p7_salud" value="salud"> Salud</label>
                             <label><input type="checkbox" name="p7_doc" value="documentacion"> Documentación</label>
                             <label><input type="checkbox" name="p7_legal" value="legal"> Asesoramiento legal</label>
-                            <label><input type="text" name="p7_otro" placeholder="Otro:"></label>
+                            <label><input type="text" name="p7_otro" placeholder="Otro:" style="flex:1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; margin-left: 5px;"></label>
                         </div>
                     </div>
 
@@ -163,24 +189,24 @@
                     </div>
                 </div>
 
+                <!-- PREGUNTA 10 MODIFICADA -->
                 <div class="pregunta">
-                    <p><strong>10.</strong> ¿Cuál considera que es el principal problema de su barrio? (una sola opción)</p>
+                    <p><strong>10.</strong> ¿Cuál considera que es actualmente el principal problema de su barrio? (Seleccione una sola opción)</p>
                     <div class="opciones">
                         <label><input type="radio" name="p10" value="inseguridad"> Inseguridad</label>
-                        <label><input type="radio" name="p10" value="limpieza"> Falta de limpieza</label>
-                        <label><input type="radio" name="p10" value="agua"> Problemas con el agua potable</label>
-                        <label><input type="radio" name="p10" value="calles"> Estado de calles y caminos</label>
-                        <label><input type="radio" name="p10" value="contaminacion"> Contaminación / problemas ambientales</label>
-                        <label><input type="radio" name="p10" value="iluminacion"> Falta o deterioro de iluminación</label>
-                        <label><input type="radio" name="p10" value="servicios"> Falta de otros servicios o infraestructura</label>
+                        <label><input type="radio" name="p10" value="limpieza"> Falta de limpieza y mantenimiento del espacio público</label>
+                        <label><input type="radio" name="p10" value="agua"> Problemas con el acceso o la calidad del agua potable</label>
+                        <label><input type="radio" name="p10" value="calles"> Mal estado o falta de pavimentación de calles y caminos</label>
+                        <label><input type="radio" name="p10" value="contaminacion"> Contaminación u otros problemas ambientales</label>
+                        <label><input type="radio" name="p10" value="iluminacion"> Falta, deterioro o insuficiencia del alumbrado público</label>
+                        <label><input type="radio" name="p10" value="infraestructura"> Falta o deterioro de infraestructura urbana (acequias, cordones, cunetas, veredas, plazas, espacios públicos, etc.)</label>
+                        <label><input type="radio" name="p10" value="salud"> Dificultades para acceder a servicios de salud</label>
+                        <label><input type="radio" name="p10" value="servicios"> Falta de acceso a servicios públicos o comunitarios (salud, educación, transporte, conectividad, atención municipal u otros)</label>
                         <label><input type="radio" name="p10" value="otro"> Otro: <input type="text" name="p10_otro" placeholder="Especifique"></label>
                     </div>
                 </div>
 
-                <div class="pregunta">
-                    <p><strong>11.</strong> ¿Por qué considera que ese es el principal problema de su barrio?</p>
-                    <textarea name="p11" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
-                </div>
+                <!-- ELIMINADA PREGUNTA 11 -->
             </div>
 
             <!-- BLOQUE 4 — Obras e intervenciones -->
@@ -188,34 +214,42 @@
                 <h2>BLOQUE 4 — Obras e intervenciones</h2>
                 
                 <div class="pregunta">
-                    <p><strong>12.</strong> ¿Cuál de las siguientes obras considera más relevante para el departamento? (una sola opción)</p>
+                    <p><strong>11.</strong> ¿Cuál de las siguientes obras considera más relevante para el departamento? (una sola opción)</p>
                     <div class="opciones">
-                        <label><input type="radio" name="p12" value="ruta50"> Repavimentación de Ruta Provincial 50</label>
-                        <label><input type="radio" name="p12" value="planta"> Planta de transferencia de residuos y erradicación del basural a cielo abierto</label>
-                        <label><input type="radio" name="p12" value="auditorio"> Auditorio Municipal</label>
-                        <label><input type="radio" name="p12" value="parque"> Parque Ventura Segura</label>
-                        <label><input type="radio" name="p12" value="otro"> Otra: <input type="text" name="p12_otro" placeholder="Especifique"></label>
+                        <label><input type="radio" name="p11" value="ruta50"> Repavimentación de Ruta Provincial 50</label>
+                        <label><input type="radio" name="p11" value="planta"> Planta de transferencia de residuos y erradicación del basural a cielo abierto</label>
+                        <label><input type="radio" name="p11" value="auditorio"> Auditorio Municipal</label>
+                        <label><input type="radio" name="p11" value="parque"> Parque Ventura Segura</label>
+                        <label><input type="radio" name="p11" value="otro"> Otra: <input type="text" name="p11_otro" placeholder="Especifique"></label>
                     </div>
                 </div>
 
                 <div class="pregunta">
-                    <p><strong>13.</strong> ¿Por qué considera que esa obra es la más relevante?</p>
-                    <textarea name="p13" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <p><strong>12.</strong> ¿Por qué considera que esa obra es la más relevante?</p>
+                    <textarea name="p12" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
                 </div>
 
+                <!-- PREGUNTA 13 MODIFICADA (era 14) -->
                 <div class="pregunta">
-                    <p><strong>14.</strong> ¿Cuál de las siguientes intervenciones considera más importante para su barrio? (una sola opción)</p>
+                    <p><strong>13.</strong> De las siguientes obras o intervenciones realizadas en Las Catitas, ¿cuál considera que tuvo mayor importancia? (Seleccione una sola opción)</p>
                     <div class="opciones">
-                        <label><input type="radio" name="p14" value="plaza"> Remodelación de plaza y juegos</label>
-                        <label><input type="radio" name="p14" value="led"> Instalación de luminarias LED en La Costanera</label>
-                        <label><input type="radio" name="p14" value="otro"> Otra: <input type="text" name="p14_otro" placeholder="Especifique"></label>
-                        <label><input type="radio" name="p14" value="ninguna"> Ninguna</label>
+                        <label><input type="radio" name="p13" value="ruta50"> Repavimentación de la Ruta Provincial N.º 50</label>
+                        <label><input type="radio" name="p13" value="basural"> Erradicación del basural y mejora del sistema de gestión de residuos</label>
+                        <label><input type="radio" name="p13" value="plaza-costanera"> Remodelación integral de la Plaza La Costanera y construcción del playón multideportivo</label>
+                        <label><input type="radio" name="p13" value="urbanizacion"> Urbanización de barrios Arenas y SUTE</label>
+                        <label><input type="radio" name="p13" value="ciclovia"> Construcción de la ciclovía de calle Guiñazú</label>
+                        <label><input type="radio" name="p13" value="terminal"> Refacción y ampliación de la Terminal de Ómnibus (Baños)</label>
+                        <label><input type="radio" name="p13" value="plazas"> Remodelación de las plazas Malvinas Argentinas y Sarmiento</label>
+                        <label><input type="radio" name="p13" value="led"> Recambio e instalación de luminarias LED en distintos sectores (La Costanera, calle Eliseo Ortiz, La Piedad, etc.)</label>
+                        <label><input type="radio" name="p13" value="repavimentacion"> Repavimentación de calles (Francisco Cirot, Emilio Civit y calles circundantes a Plaza Sarmiento)</label>
+                        <label><input type="radio" name="p13" value="paseo"> Construcción del Paseo Urbano Leonardo Favio</label>
+                        <label><input type="radio" name="p13" value="otro"> Otra obra o intervención: <input type="text" name="p13_otro" placeholder="Especifique"></label>
                     </div>
                 </div>
 
                 <div class="pregunta">
-                    <p><strong>15.</strong> ¿Por qué considera que esa intervención fue la más importante?</p>
-                    <textarea name="p15" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <p><strong>14.</strong> ¿Por qué considera que esa obra o intervención fue la más importante?</p>
+                    <textarea name="p14" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
                 </div>
             </div>
 
@@ -224,8 +258,8 @@
                 <h2>BLOQUE 5 — Sugerencias</h2>
                 
                 <div class="pregunta">
-                    <p><strong>16.</strong> ¿Qué servicio o mejora considera prioritaria para su barrio?</p>
-                    <textarea name="p16" rows="4" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <p><strong>15.</strong> ¿Qué servicio o mejora considera prioritaria para su barrio?</p>
+                    <textarea name="p15" rows="4" placeholder="Registre textualmente la respuesta..."></textarea>
                 </div>
             </div>
 
