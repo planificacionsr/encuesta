@@ -33,15 +33,11 @@
                 </select>
             </div>
 
-            <!-- Subzona especial para La Costanera -->
+            <!-- Subzona especial para La Costanera - SOLO INPUT NUMÉRICO -->
             <div id="costaneraInfo" style="display:none;">
                 <div class="form-group">
                     <label for="numeroCuadra">Número de cuadra (1-25):</label>
-                    <input type="number" id="numeroCuadra" min="1" max="25" placeholder="Ingrese el número de cuadra">
-                </div>
-                <div class="cuadras-diagram">
-                    <p>Diagrama de cuadras (haga clic en el número):</p>
-                    <div class="cuadras-grid" id="cuadrasGrid"></div>
+                    <input type="number" id="numeroCuadra" min="1" max="25" placeholder="Ingrese el número de cuadra (1-25)">
                 </div>
             </div>
 
@@ -50,6 +46,46 @@
 
         <div class="info-extra">
             <p><strong>Estimación de viviendas:</strong> <span id="estimacionViviendas">-</span></p>
+        </div>
+
+        <!-- Panel de estadísticas -->
+        <div class="card estadisticas">
+            <h2>📊 Estadísticas de Encuestas</h2>
+            <div class="stats-grid">
+                <div class="stat-item total">
+                    <span class="stat-label">Total Encuestas</span>
+                    <span class="stat-number" id="totalEncuestas">0</span>
+                </div>
+                <div class="stat-item norte">
+                    <span class="stat-label">🟨 NORTE</span>
+                    <span class="stat-number" id="statsNorte">0</span>
+                </div>
+                <div class="stat-item centro">
+                    <span class="stat-label">🟧 CENTRO</span>
+                    <span class="stat-number" id="statsCentro">0</span>
+                </div>
+                <div class="stat-item sur">
+                    <span class="stat-label">🟦 SUR</span>
+                    <span class="stat-number" id="statsSur">0</span>
+                </div>
+            </div>
+            
+            <div id="detalleSubzonas" style="margin-top: 15px;">
+                <p><strong>Detalle por subzona:</strong></p>
+                <div id="subzonasDetalle" class="subzonas-detalle"></div>
+            </div>
+
+            <div class="stats-actions">
+                <button onclick="exportarEncuestasCSV()" class="btn-primary" style="flex:1;">
+                    📥 Exportar CSV
+                </button>
+                <button onclick="verEstadisticasCompletas()" class="btn-secondary" style="flex:1;">
+                    🔍 Ver Detalle
+                </button>
+                <button onclick="borrarTodasEncuestas()" class="btn-danger" style="flex:0.5;">
+                    🗑️ Borrar Todo
+                </button>
+            </div>
         </div>
     </div>
 
