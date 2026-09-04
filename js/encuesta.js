@@ -66,29 +66,10 @@ function initPaginaPrincipal() {
     const btnIniciar = document.getElementById('btnIniciarEncuesta');
     const estimacionSpan = document.getElementById('estimacionViviendas');
     const costaneraInfo = document.getElementById('costaneraInfo');
-    const cuadrasGrid = document.getElementById('cuadrasGrid');
 
     if (!zonaSelect || !subZonaSelect || !btnIniciar) {
         console.error('No se encontraron todos los elementos necesarios en la página');
         return;
-    }
-
-    // Generar diagrama de cuadras para La Costanera
-    if (cuadrasGrid) {
-        for (let i = 1; i <= 25; i++) {
-            const div = document.createElement('div');
-            div.className = 'cuadra-item';
-            div.textContent = i;
-            div.dataset.numero = i;
-            div.onclick = function() {
-                document.querySelectorAll('.cuadra-item').forEach(el => el.classList.remove('seleccionada'));
-                this.classList.add('seleccionada');
-                const numCuadra = document.getElementById('numeroCuadra');
-                if (numCuadra) numCuadra.value = i;
-                verificarHabilitarBoton();
-            };
-            cuadrasGrid.appendChild(div);
-        }
     }
 
     // Evento cambio de zona principal
@@ -115,6 +96,7 @@ function initPaginaPrincipal() {
             
             subZonaSelect.disabled = false;
             
+            // Si es SUR, mostrar input para número de cuadra (sin diagrama)
             if (zona === 'sur') {
                 if (costaneraInfo) costaneraInfo.style.display = 'block';
             }
@@ -136,12 +118,6 @@ function initPaginaPrincipal() {
     const numeroCuadra = document.getElementById('numeroCuadra');
     if (numeroCuadra) {
         numeroCuadra.addEventListener('input', function() {
-            const val = parseInt(this.value);
-            if (val >= 1 && val <= 25) {
-                document.querySelectorAll('.cuadra-item').forEach(el => {
-                    el.classList.toggle('seleccionada', parseInt(el.dataset.numero) === val);
-                });
-            }
             verificarHabilitarBoton();
         });
     }
@@ -156,7 +132,7 @@ function initPaginaPrincipal() {
             const numCuadra = document.getElementById('numeroCuadra');
             if (numCuadra) cuadra = numCuadra.value;
             if (!cuadra || cuadra < 1 || cuadra > 25) {
-                alert('Por favor, seleccione un número de cuadra (1-25)');
+                alert('Por favor, ingrese un número de cuadra válido (1-25)');
                 return;
             }
         }
@@ -258,7 +234,7 @@ function initPaginaEncuesta() {
         });
     });
 
-    // Botón guardar - AHORA CON MEJOR MANEJO DE ERRORES
+    // Botón guardar
     const btnGuardar = document.getElementById('btnGuardar');
     if (btnGuardar) {
         btnGuardar.addEventListener('click', function() {
@@ -280,15 +256,20 @@ function initPaginaEncuesta() {
 
 // Función para validar el formulario
 function validarFormulario() {
-    const camposRequeridos = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p10', 'p12', 'p14'];
+    const camposRequeridos = ['sexo', 'edad', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p10', 'p11', 'p13'];
     let valid = true;
-    let mensaje = 'Por favor, complete los siguientes campos:\n';
     let camposFaltantes = [];
     
     camposRequeridos.forEach(id => {
         const seleccionado = document.querySelector(`input[name="${id}"]:checked`);
         if (!seleccionado) {
-            camposFaltantes.push(id.replace('p', ''));
+            const nombre = id === 'sexo' ? 'Sexo' : 
+                          id === 'edad' ? 'Rango etario' :
+                          id === 'p10' ? 'Pregunta 10' :
+                          id === 'p11' ? 'Pregunta 11' :
+                          id === 'p13' ? 'Pregunta 13' :
+                          `Pregunta ${id.replace('p', '')}`;
+            camposFaltantes.push(nombre);
             valid = false;
         }
     });
@@ -297,13 +278,13 @@ function validarFormulario() {
     for (let i = 1; i <= 3; i++) {
         const select = document.querySelector(`select[name="p9_${i}"]`);
         if (!select || !select.value) {
-            camposFaltantes.push(`9.${i}`);
+            camposFaltantes.push(`Pregunta 9 - Problema #${i}`);
             valid = false;
         }
     }
     
     if (!valid) {
-        alert(`Por favor, complete todos los campos obligatorios:\n- Preguntas: ${camposFaltantes.join(', ')}`);
+        alert(`Por favor, complete todos los campos obligatorios:\n- ${camposFaltantes.join('\n- ')}`);
         return false;
     }
     
@@ -312,13 +293,11 @@ function validarFormulario() {
 
 // Función para recolectar datos del formulario
 function recolectarDatos() {
-    // Obtener la zona y subzona del sessionStorage
     const zona = sessionStorage.getItem('zonaEncuesta') || '';
     const subzona = sessionStorage.getItem('subzonaEncuesta') || '';
     const cuadra = sessionStorage.getItem('cuadraEncuesta') || '';
     const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
     
-    // Recolectar respuestas
     const datos = {
         // Metadatos
         fecha: new Date().toISOString(),
@@ -327,6 +306,10 @@ function recolectarDatos() {
         zonaNombre: zonasData[zona]?.nombre || zona,
         subzona: subzona,
         cuadra: cuadra,
+        
+        // Bloque 0 - Datos del entrevistado
+        sexo: document.querySelector('input[name="sexo"]:checked')?.value || '',
+        edad: document.querySelector('input[name="edad"]:checked')?.value || '',
         
         // Bloque 1
         p1: document.querySelector('input[name="p1"]:checked')?.value || '',
@@ -350,49 +333,158 @@ function recolectarDatos() {
         p9_3: document.querySelector('select[name="p9_3"]')?.value || '',
         p10: document.querySelector('input[name="p10"]:checked')?.value || '',
         p10_otro: document.querySelector('input[name="p10_otro"]')?.value || '',
-        p11: document.querySelector('textarea[name="p11"]')?.value || '',
         
         // Bloque 4
-        p12: document.querySelector('input[name="p12"]:checked')?.value || '',
-        p12_otro: document.querySelector('input[name="p12_otro"]')?.value || '',
-        p13: document.querySelector('textarea[name="p13"]')?.value || '',
-        p14: document.querySelector('input[name="p14"]:checked')?.value || '',
-        p14_otro: document.querySelector('input[name="p14_otro"]')?.value || '',
-        p15: document.querySelector('textarea[name="p15"]')?.value || '',
+        p11: document.querySelector('input[name="p11"]:checked')?.value || '',
+        p11_otro: document.querySelector('input[name="p11_otro"]')?.value || '',
+        p12: document.querySelector('textarea[name="p12"]')?.value || '',
+        p13: document.querySelector('input[name="p13"]:checked')?.value || '',
+        p13_otro: document.querySelector('input[name="p13_otro"]')?.value || '',
+        p14: document.querySelector('textarea[name="p14"]')?.value || '',
         
         // Bloque 5
-        p16: document.querySelector('textarea[name="p16"]')?.value || ''
+        p15: document.querySelector('textarea[name="p15"]')?.value || ''
     };
     
     return datos;
 }
 
-// Función para guardar datos - AHORA CON VERIFICACIONES
+// Función para guardar datos
 function guardarDatos(datos) {
     try {
         console.log('Intentando guardar datos...');
         
-        // Obtener datos existentes
         let encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
         console.log(`Encuestas existentes: ${encuestas.length}`);
         
-        // Agregar nueva encuesta
         encuestas.push(datos);
-        
-        // Guardar en localStorage
         localStorage.setItem('encuestas', JSON.stringify(encuestas));
         console.log(`✅ Encuesta guardada correctamente. Total: ${encuestas.length}`);
         
-        // Mostrar mensaje de éxito
         alert(`✅ Encuesta #${datos.numeroEncuesta} guardada correctamente!\nTotal de encuestas: ${encuestas.length}`);
         
-        // Redirigir a página de agradecimiento
+        actualizarEstadisticas();
         window.location.href = 'gracias.html';
         
     } catch (error) {
         console.error('❌ Error al guardar:', error);
         alert('❌ Error al guardar la encuesta. Por favor, intente nuevamente.');
     }
+}
+
+// ===== FUNCIONES DE ESTADÍSTICAS =====
+
+function actualizarEstadisticas() {
+    console.log('Actualizando estadísticas...');
+    
+    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
+    const total = encuestas.length;
+    
+    let conteoZonas = { norte: 0, centro: 0, sur: 0 };
+    let conteoSubzonas = {};
+    
+    encuestas.forEach(enc => {
+        const zona = enc.zona || '';
+        if (zona && conteoZonas.hasOwnProperty(zona)) {
+            conteoZonas[zona]++;
+        }
+        
+        const subzona = enc.subzona || 'Sin especificar';
+        if (!conteoSubzonas[subzona]) {
+            conteoSubzonas[subzona] = 0;
+        }
+        conteoSubzonas[subzona]++;
+    });
+    
+    const totalElem = document.getElementById('totalEncuestas');
+    const norteElem = document.getElementById('statsNorte');
+    const centroElem = document.getElementById('statsCentro');
+    const surElem = document.getElementById('statsSur');
+    const detalleElem = document.getElementById('subzonasDetalle');
+    
+    if (totalElem) totalElem.textContent = total;
+    if (norteElem) norteElem.textContent = conteoZonas.norte;
+    if (centroElem) centroElem.textContent = conteoZonas.centro;
+    if (surElem) surElem.textContent = conteoZonas.sur;
+    
+    if (detalleElem) {
+        detalleElem.innerHTML = '';
+        const subzonasOrdenadas = Object.entries(conteoSubzonas)
+            .sort((a, b) => b[1] - a[1]);
+        
+        if (subzonasOrdenadas.length === 0) {
+            detalleElem.innerHTML = '<p style="color: #95a5a6; font-style: italic;">No hay encuestas registradas aún</p>';
+        } else {
+            subzonasOrdenadas.forEach(([nombre, cantidad]) => {
+                const div = document.createElement('div');
+                div.className = 'subzona-item';
+                div.innerHTML = `
+                    <span class="subzona-nombre">${nombre}</span>
+                    <span class="subzona-cantidad">${cantidad}</span>
+                `;
+                detalleElem.appendChild(div);
+            });
+        }
+    }
+}
+
+function verEstadisticasCompletas() {
+    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
+    const total = encuestas.length;
+    
+    let conteoZonas = { norte: 0, centro: 0, sur: 0 };
+    let conteoSubzonas = {};
+    let conteoSexo = { masculino: 0, femenino: 0 };
+    let conteoEdad = {};
+    
+    encuestas.forEach(enc => {
+        const zona = enc.zona || '';
+        if (zona && conteoZonas.hasOwnProperty(zona)) {
+            conteoZonas[zona]++;
+        }
+        
+        const subzona = enc.subzona || 'Sin especificar';
+        if (!conteoSubzonas[subzona]) {
+            conteoSubzonas[subzona] = 0;
+        }
+        conteoSubzonas[subzona]++;
+        
+        // Estadísticas de sexo
+        if (enc.sexo && conteoSexo.hasOwnProperty(enc.sexo)) {
+            conteoSexo[enc.sexo]++;
+        }
+        
+        // Estadísticas de edad
+        const edad = enc.edad || 'Sin especificar';
+        if (!conteoEdad[edad]) {
+            conteoEdad[edad] = 0;
+        }
+        conteoEdad[edad]++;
+    });
+    
+    let mensaje = `📊 ===== ESTADÍSTICAS COMPLETAS =====\n\n`;
+    mensaje += `📝 Total de encuestas: ${total}\n\n`;
+    mensaje += `📍 Por zona:\n`;
+    mensaje += `   🟨 NORTE: ${conteoZonas.norte}\n`;
+    mensaje += `   🟧 CENTRO: ${conteoZonas.centro}\n`;
+    mensaje += `   🟦 SUR: ${conteoZonas.sur}\n\n`;
+    mensaje += `👤 Por sexo:\n`;
+    mensaje += `   ♂ Masculino: ${conteoSexo.masculino}\n`;
+    mensaje += `   ♀ Femenino: ${conteoSexo.femenino}\n\n`;
+    mensaje += `📅 Por rango etario:\n`;
+    Object.entries(conteoEdad)
+        .sort((a, b) => {
+            const order = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-100'];
+            return order.indexOf(a[0]) - order.indexOf(b[0]);
+        })
+        .forEach(([rango, cantidad]) => {
+            mensaje += `   ${rango} años: ${cantidad}\n`;
+        });
+    
+    alert(mensaje);
+    console.log(mensaje);
+    
+    return { total, conteoZonas, conteoSubzonas, conteoSexo, conteoEdad };
 }
 
 // Función para exportar todas las encuestas a CSV
@@ -404,23 +496,21 @@ function exportarEncuestasCSV() {
         return;
     }
     
-    // Definir columnas para el CSV
     const columnas = [
         'numeroEncuesta', 'fecha', 'zonaNombre', 'subzona', 'cuadra',
+        'sexo', 'edad',
         'p1', 'p2', 'p3', 'p4', 'p5', 'p5_motivo',
         'p6', 'p7_salud', 'p7_documentacion', 'p7_legal', 'p7_otro', 'p8',
-        'p9_1', 'p9_2', 'p9_3', 'p10', 'p10_otro', 'p11',
-        'p12', 'p12_otro', 'p13', 'p14', 'p14_otro', 'p15',
-        'p16'
+        'p9_1', 'p9_2', 'p9_3', 'p10', 'p10_otro',
+        'p11', 'p11_otro', 'p12', 'p13', 'p13_otro', 'p14',
+        'p15'
     ];
     
-    // Crear CSV
     let csv = columnas.join(',') + '\n';
     
     encuestas.forEach(enc => {
         const row = columnas.map(col => {
             let val = enc[col] || '';
-            // Escapar comillas y comas
             if (typeof val === 'string') {
                 val = val.replace(/"/g, '""');
                 if (val.includes(',') || val.includes('"') || val.includes('\n')) {
@@ -432,7 +522,6 @@ function exportarEncuestasCSV() {
         csv += row.join(',') + '\n';
     });
     
-    // Descargar archivo
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -446,24 +535,12 @@ function exportarEncuestasCSV() {
     alert(`✅ Se exportaron ${encuestas.length} encuestas correctamente`);
 }
 
-// Función para ver cuántas encuestas hay guardadas (desde consola)
-function verEstadisticas() {
-    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
-    console.log(`📊 Total de encuestas guardadas: ${encuestas.length}`);
-    console.log('📋 Últimas 5 encuestas:', encuestas.slice(-5));
-    return {
-        total: encuestas.length,
-        ultimas: encuestas.slice(-5)
-    };
-}
-
-// Función para borrar todas las encuestas (con confirmación)
 function borrarTodasEncuestas() {
     if (confirm('⚠️ ¿Estás seguro de borrar TODAS las encuestas guardadas?')) {
         if (confirm('Confirmación final: ¿Borrar todas las encuestas?')) {
             localStorage.removeItem('encuestas');
             alert('✅ Todas las encuestas han sido borradas');
-            console.log('✅ Todas las encuestas borradas');
+            actualizarEstadisticas();
         }
     }
 }
@@ -495,10 +572,12 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('Página detectada: index.html (por defecto)');
         initPaginaPrincipal();
+        setTimeout(actualizarEstadisticas, 100);
     }
 });
 
 // Funciones disponibles desde la consola
 window.exportarEncuestasCSV = exportarEncuestasCSV;
-window.verEstadisticas = verEstadisticas;
+window.verEstadisticasCompletas = verEstadisticasCompletas;
 window.borrarTodasEncuestas = borrarTodasEncuestas;
+window.actualizarEstadisticas = actualizarEstadisticas;
