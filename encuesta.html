@@ -13,10 +13,27 @@
             <p>Municipalidad de Santa Rosa</p>
         </header>
 
+        <!-- INDICADOR DE ZONA MEJORADO -->
         <div class="encuesta-progress">
-            <span>Zona: <strong id="zonaSeleccionada">-</strong></span>
-            <span>Subzona: <strong id="subzonaSeleccionada">-</strong></span>
-            <span>N° Encuesta: <strong id="numeroEncuesta">#001</strong></span>
+            <div class="progress-item">
+                <span class="progress-label">📍 Zona:</span>
+                <span class="progress-value" id="zonaSeleccionada">-</span>
+            </div>
+            <div class="progress-item">
+                <span class="progress-label">🏘️ Subzona:</span>
+                <span class="progress-value" id="subzonaSeleccionada">-</span>
+            </div>
+            <div class="progress-item">
+                <span class="progress-label">🔢 N° Encuesta:</span>
+                <span class="progress-value" id="numeroEncuesta">#001</span>
+            </div>
+        </div>
+
+        <!-- BOTÓN VOLVER -->
+        <div style="margin-bottom: 20px;">
+            <button onclick="volverAlInicio()" class="btn-volver">
+                ⬅ Volver a seleccionar zona
+            </button>
         </div>
 
         <form id="formEncuesta">
@@ -189,7 +206,6 @@
                     </div>
                 </div>
 
-                <!-- PREGUNTA 10 MODIFICADA -->
                 <div class="pregunta">
                     <p><strong>10.</strong> ¿Cuál considera que es actualmente el principal problema de su barrio? (Seleccione una sola opción)</p>
                     <div class="opciones">
@@ -205,8 +221,6 @@
                         <label><input type="radio" name="p10" value="otro"> Otro: <input type="text" name="p10_otro" placeholder="Especifique"></label>
                     </div>
                 </div>
-
-                <!-- ELIMINADA PREGUNTA 11 -->
             </div>
 
             <!-- BLOQUE 4 — Obras e intervenciones -->
@@ -229,7 +243,6 @@
                     <textarea name="p12" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
                 </div>
 
-                <!-- PREGUNTA 13 MODIFICADA (era 14) -->
                 <div class="pregunta">
                     <p><strong>13.</strong> De las siguientes obras o intervenciones realizadas en Las Catitas, ¿cuál considera que tuvo mayor importancia? (Seleccione una sola opción)</p>
                     <div class="opciones">
