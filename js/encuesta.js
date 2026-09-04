@@ -57,6 +57,13 @@ function actualizarNumeroEncuesta() {
     return num;
 }
 
+// Función para volver al inicio (desde encuesta.html)
+function volverAlInicio() {
+    if (confirm('¿Estás seguro de que quieres volver? Los datos del formulario se perderán.')) {
+        window.location.href = 'index.html';
+    }
+}
+
 // Inicializar la página principal (index.html)
 function initPaginaPrincipal() {
     console.log('Inicializando página principal...');
@@ -200,8 +207,22 @@ function initPaginaEncuesta() {
     const subzonaElem = document.getElementById('subzonaSeleccionada');
     const numElem = document.getElementById('numeroEncuesta');
     
-    if (zonaElem) zonaElem.textContent = zonasData[zona]?.nombre || zona;
-    if (subzonaElem) subzonaElem.textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
+    // Mostrar la zona con su nombre completo y color
+    const zonaNombre = zonasData[zona]?.nombre || zona;
+    const emojiZona = zona === 'norte' ? '🟨' : zona === 'centro' ? '🟧' : zona === 'sur' ? '🟦' : '📍';
+    
+    if (zonaElem) {
+        zonaElem.textContent = `${emojiZona} ${zonaNombre}`;
+        // Agregar clase de color para el indicador
+        if (zona === 'norte') zonaElem.style.color = '#f39c12';
+        else if (zona === 'centro') zonaElem.style.color = '#e67e22';
+        else if (zona === 'sur') zonaElem.style.color = '#2980b9';
+    }
+    
+    if (subzonaElem) {
+        subzonaElem.textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
+    }
+    
     if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
 
     // Mostrar pregunta abierta si se selecciona Regular, Malo o Muy malo
@@ -428,6 +449,7 @@ function actualizarEstadisticas() {
     }
 }
 
+// Función para ver estadísticas completas (SOLO PARA ADMIN - desde consola)
 function verEstadisticasCompletas() {
     const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
     const total = encuestas.length;
@@ -449,12 +471,10 @@ function verEstadisticasCompletas() {
         }
         conteoSubzonas[subzona]++;
         
-        // Estadísticas de sexo
         if (enc.sexo && conteoSexo.hasOwnProperty(enc.sexo)) {
             conteoSexo[enc.sexo]++;
         }
         
-        // Estadísticas de edad
         const edad = enc.edad || 'Sin especificar';
         if (!conteoEdad[edad]) {
             conteoEdad[edad] = 0;
@@ -472,11 +492,9 @@ function verEstadisticasCompletas() {
     mensaje += `   ♂ Masculino: ${conteoSexo.masculino}\n`;
     mensaje += `   ♀ Femenino: ${conteoSexo.femenino}\n\n`;
     mensaje += `📅 Por rango etario:\n`;
+    const order = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-100'];
     Object.entries(conteoEdad)
-        .sort((a, b) => {
-            const order = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-100'];
-            return order.indexOf(a[0]) - order.indexOf(b[0]);
-        })
+        .sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]))
         .forEach(([rango, cantidad]) => {
             mensaje += `   ${rango} años: ${cantidad}\n`;
         });
@@ -487,7 +505,7 @@ function verEstadisticasCompletas() {
     return { total, conteoZonas, conteoSubzonas, conteoSexo, conteoEdad };
 }
 
-// Función para exportar todas las encuestas a CSV
+// Función para exportar a CSV (SOLO PARA ADMIN - desde consola)
 function exportarEncuestasCSV() {
     const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
     
@@ -576,8 +594,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Funciones disponibles desde la consola
+// Funciones disponibles SOLO DESDE CONSOLA (para el administrador)
 window.exportarEncuestasCSV = exportarEncuestasCSV;
 window.verEstadisticasCompletas = verEstadisticasCompletas;
 window.borrarTodasEncuestas = borrarTodasEncuestas;
 window.actualizarEstadisticas = actualizarEstadisticas;
+window.volverAlInicio = volverAlInicio;
