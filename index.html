@@ -48,7 +48,7 @@
             <p><strong>Estimación de viviendas:</strong> <span id="estimacionViviendas">-</span></p>
         </div>
 
-        <!-- Panel de estadísticas -->
+        <!-- Panel de estadísticas - SOLO VISUAL, SIN BOTONES -->
         <div class="card estadisticas">
             <h2>📊 Estadísticas de Encuestas</h2>
             <div class="stats-grid">
@@ -75,17 +75,10 @@
                 <div id="subzonasDetalle" class="subzonas-detalle"></div>
             </div>
 
-            <div class="stats-actions">
-                <button onclick="exportarEncuestasCSV()" class="btn-primary" style="flex:1;">
-                    📥 Exportar CSV
-                </button>
-                <button onclick="verEstadisticasCompletas()" class="btn-secondary" style="flex:1;">
-                    🔍 Ver Detalle
-                </button>
-                <button onclick="borrarTodasEncuestas()" class="btn-danger" style="flex:0.5;">
-                    🗑️ Borrar Todo
-                </button>
-            </div>
+            <!-- Solo texto informativo, sin botones -->
+            <p style="margin-top: 15px; color: #95a5a6; font-size: 0.85em; text-align: center;">
+                ℹ️ Los datos se guardan automáticamente en el navegador
+            </p>
         </div>
     </div>
 
