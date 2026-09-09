@@ -370,28 +370,103 @@ function recolectarDatos() {
     return datos;
 }
 
-// Función para guardar datos
+// ===== GUARDAR EN GOOGLE SHEETS =====
 function guardarDatos(datos) {
-    try {
-        console.log('Intentando guardar datos...');
+    // URL de tu Google Apps Script (COPIA LA TUYA)
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec';
+    
+    console.log('Intentando guardar datos en Google Sheets...');
+    
+    // Mostrar mensaje de "guardando"
+    const btnGuardar = document.getElementById('btnGuardar');
+    const textoOriginal = btnGuardar.textContent;
+    btnGuardar.textContent = '⏳ Guardando...';
+    btnGuardar.disabled = true;
+    
+    fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Importante para Google Sheets
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(response => {
+        console.log('✅ Datos enviados correctamente');
+        btnGuardar.textContent = '✅ ¡Guardado!';
         
-        let encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
-        console.log(`Encuestas existentes: ${encuestas.length}`);
+        // También guardar localmente como backup
+        guardarBackupLocal(datos);
         
-        encuestas.push(datos);
-        localStorage.setItem('encuestas', JSON.stringify(encuestas));
-        console.log(`✅ Encuesta guardada correctamente. Total: ${encuestas.length}`);
+        alert(`✅ Encuesta #${datos.numeroEncuesta} guardada correctamente en la nube!`);
         
-        alert(`✅ Encuesta #${datos.numeroEncuesta} guardada correctamente!\nTotal de encuestas: ${encuestas.length}`);
-        
-        actualizarEstadisticas();
-        window.location.href = 'gracias.html';
-        
-    } catch (error) {
+        // Redirigir después de 1 segundo
+        setTimeout(() => {
+            window.location.href = 'gracias.html';
+        }, 1000);
+    })
+    .catch(error => {
         console.error('❌ Error al guardar:', error);
-        alert('❌ Error al guardar la encuesta. Por favor, intente nuevamente.');
-    }
+        btnGuardar.textContent = textoOriginal;
+        btnGuardar.disabled = false;
+        
+        // Si falla, intentar guardar localmente
+        if (confirm('❌ Error de conexión. ¿Guardar la encuesta localmente para enviar después?')) {
+            guardarBackupLocal(datos);
+            alert('✅ Encuesta guardada localmente. Se enviará cuando tengas conexión.');
+            window.location.href = 'gracias.html';
+        }
+    });
 }
+
+// Función para guardar backup local (por si falla la conexión)
+function guardarBackupLocal(datos) {
+    let pendientes = JSON.parse(localStorage.getItem('encuestas_pendientes') || '[]');
+    pendientes.push(datos);
+    localStorage.setItem('encuestas_pendientes', JSON.stringify(pendientes));
+    console.log('📦 Backup local guardado');
+}
+
+// Función para sincronizar encuestas pendientes (ejecutar desde consola)
+function sincronizarPendientes() {
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec';
+    const pendientes = JSON.parse(localStorage.getItem('encuestas_pendientes') || '[]');
+    
+    if (pendientes.length === 0) {
+        alert('No hay encuestas pendientes');
+        return;
+    }
+    
+    console.log(`📤 Enviando ${pendientes.length} encuestas pendientes...`);
+    
+    let enviadas = 0;
+    let errores = 0;
+    
+    pendientes.forEach((datos, index) => {
+        fetch(GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        })
+        .then(() => {
+            enviadas++;
+            console.log(`✅ Encuesta #${datos.numeroEncuesta} sincronizada`);
+            
+            if (enviadas + errores === pendientes.length) {
+                localStorage.removeItem('encuestas_pendientes');
+                alert(`✅ Sincronización completa!\nEnviadas: ${enviadas}\nErrores: ${errores}`);
+            }
+        })
+        .catch(() => {
+            errores++;
+            console.log(`❌ Error al sincronizar encuesta #${datos.numeroEncuesta}`);
+        });
+    });
+}
+
+// Hacer función accesible desde consola
+window.sincronizarPendientes = sincronizarPendientes;
 
 // ===== FUNCIONES DE ESTADÍSTICAS =====
 
