@@ -1,3 +1,7 @@
+// ===== CONFIGURACIÓN =====
+// 🔴 CAMBIA ESTA URL POR LA TUYA (la que copiaste de Google Apps Script)
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec';
+
 // Datos de las zonas
 const zonasData = {
     norte: {
@@ -35,7 +39,7 @@ let zonaSeleccionada = '';
 let subzonaSeleccionada = '';
 let numeroEncuesta = 1;
 
-// Función para cargar el número de encuesta desde localStorage
+// ===== FUNCIONES DE NÚMERO DE ENCUESTA =====
 function cargarNumeroEncuesta() {
     const guardado = localStorage.getItem('numeroEncuesta');
     if (guardado) {
@@ -47,7 +51,6 @@ function cargarNumeroEncuesta() {
     return numeroEncuesta;
 }
 
-// Función para actualizar el número de encuesta
 function actualizarNumeroEncuesta() {
     const num = cargarNumeroEncuesta();
     const elemento = document.getElementById('numeroEncuesta');
@@ -57,16 +60,152 @@ function actualizarNumeroEncuesta() {
     return num;
 }
 
-// Función para volver al inicio (desde encuesta.html)
+// ===== FUNCIÓN PARA VOLVER AL INICIO =====
 function volverAlInicio() {
     if (confirm('¿Estás seguro de que quieres volver? Los datos del formulario se perderán.')) {
         window.location.href = 'index.html';
     }
 }
 
-// Inicializar la página principal (index.html)
+// ===== FUNCIÓN PARA OBTENER ESTADÍSTICAS DESDE GOOGLE SHEETS =====
+function obtenerEstadisticasDesdeGoogle() {
+    console.log('📊 Obteniendo estadísticas desde Google Sheets...');
+    
+    return fetch(GOOGLE_SHEETS_URL, {
+        method: 'GET'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error de red: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('📊 Estadísticas obtenidas:', data);
+        return data;
+    })
+    .catch(error => {
+        console.error('❌ Error al obtener estadísticas:', error);
+        // Si falla, intentar con datos locales
+        return obtenerEstadisticasLocales();
+    });
+}
+
+// ===== FUNCIÓN PARA OBTENER ESTADÍSTICAS LOCALES (BACKUP) =====
+function obtenerEstadisticasLocales() {
+    console.log('📊 Usando estadísticas locales (backup)...');
+    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
+    const total = encuestas.length;
+    
+    const porZona = { norte: 0, centro: 0, sur: 0 };
+    const porSubzona = {};
+    
+    encuestas.forEach(enc => {
+        const zona = enc.zona || '';
+        if (zona && porZona.hasOwnProperty(zona)) {
+            porZona[zona]++;
+        }
+        
+        const subzona = enc.subzona || 'Sin especificar';
+        if (!porSubzona[subzona]) {
+            porSubzona[subzona] = 0;
+        }
+        porSubzona[subzona]++;
+    });
+    
+    return {
+        total: total,
+        porZona: porZona,
+        porSubzona: porSubzona,
+        local: true // Indicar que es dato local
+    };
+}
+
+// ===== FUNCIÓN PARA ACTUALIZAR ESTADÍSTICAS EN LA PÁGINA =====
+function actualizarEstadisticas() {
+    console.log('🔄 Actualizando estadísticas...');
+    
+    // Mostrar estado "cargando"
+    const totalElem = document.getElementById('totalEncuestas');
+    const norteElem = document.getElementById('statsNorte');
+    const centroElem = document.getElementById('statsCentro');
+    const surElem = document.getElementById('statsSur');
+    const detalleElem = document.getElementById('subzonasDetalle');
+    
+    if (totalElem) totalElem.textContent = '...';
+    if (norteElem) norteElem.textContent = '...';
+    if (centroElem) centroElem.textContent = '...';
+    if (surElem) surElem.textContent = '...';
+    
+    obtenerEstadisticasDesdeGoogle()
+        .then(data => {
+            console.log('📊 Datos recibidos:', data);
+            
+            // Actualizar total
+            if (totalElem) totalElem.textContent = data.total || 0;
+            
+            // Actualizar por zona
+            if (norteElem) norteElem.textContent = data.porZona?.norte || 0;
+            if (centroElem) centroElem.textContent = data.porZona?.centro || 0;
+            if (surElem) surElem.textContent = data.porZona?.sur || 0;
+            
+            // Actualizar detalle por subzona
+            if (detalleElem) {
+                detalleElem.innerHTML = '';
+                const subzonas = data.porSubzona || {};
+                const subzonasOrdenadas = Object.entries(subzonas)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                if (subzonasOrdenadas.length === 0) {
+                    detalleElem.innerHTML = '<p style="color: #95a5a6; font-style: italic;">No hay encuestas registradas aún</p>';
+                } else {
+                    subzonasOrdenadas.forEach(([nombre, cantidad]) => {
+                        const div = document.createElement('div');
+                        div.className = 'subzona-item';
+                        div.innerHTML = `
+                            <span class="subzona-nombre">${nombre}</span>
+                            <span class="subzona-cantidad">${cantidad}</span>
+                        `;
+                        detalleElem.appendChild(div);
+                    });
+                }
+            }
+            
+            // Si son datos locales, mostrar indicador
+            if (data.local) {
+                const aviso = document.createElement('p');
+                aviso.style.cssText = 'color: #e67e22; font-size: 0.85em; margin-top: 10px; text-align: center;';
+                aviso.textContent = '⚠️ Usando datos locales (sin conexión a Google Sheets)';
+                const statsCard = document.querySelector('.estadisticas');
+                if (statsCard && !statsCard.querySelector('.aviso-local')) {
+                    aviso.className = 'aviso-local';
+                    statsCard.appendChild(aviso);
+                }
+            } else {
+                // Si hay conexión, eliminar aviso local si existe
+                const aviso = document.querySelector('.aviso-local');
+                if (aviso) aviso.remove();
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error al actualizar estadísticas:', error);
+            // Si todo falla, mostrar datos locales
+            const dataLocal = obtenerEstadisticasLocales();
+            if (totalElem) totalElem.textContent = dataLocal.total || 0;
+            if (norteElem) norteElem.textContent = dataLocal.porZona?.norte || 0;
+            if (centroElem) centroElem.textContent = dataLocal.porZona?.centro || 0;
+            if (surElem) surElem.textContent = dataLocal.porZona?.sur || 0;
+            
+            // Mostrar error
+            if (detalleElem) {
+                detalleElem.innerHTML = '<p style="color: #e74c3c;">❌ Error al cargar estadísticas. Usando datos locales.</p>';
+            }
+        });
+}
+
+// ===== INICIALIZAR PÁGINA PRINCIPAL =====
 function initPaginaPrincipal() {
-    console.log('Inicializando página principal...');
+    console.log('📄 Inicializando página principal...');
     
     const zonaSelect = document.getElementById('zonaPrincipal');
     const subZonaSelect = document.getElementById('subZona');
@@ -75,13 +214,12 @@ function initPaginaPrincipal() {
     const costaneraInfo = document.getElementById('costaneraInfo');
 
     if (!zonaSelect || !subZonaSelect || !btnIniciar) {
-        console.error('No se encontraron todos los elementos necesarios en la página');
+        console.error('❌ No se encontraron todos los elementos necesarios');
         return;
     }
 
-    // Evento cambio de zona principal
+    // Evento cambio de zona
     zonaSelect.addEventListener('change', function() {
-        console.log('Zona seleccionada:', this.value);
         const zona = this.value;
         zonaSeleccionada = zona;
         
@@ -93,7 +231,6 @@ function initPaginaPrincipal() {
             const data = zonasData[zona];
             if (estimacionSpan) estimacionSpan.textContent = data.estimacion;
             
-            console.log('Cargando subzonas para:', zona);
             data.subzonas.forEach(sub => {
                 const option = document.createElement('option');
                 option.value = sub;
@@ -103,7 +240,6 @@ function initPaginaPrincipal() {
             
             subZonaSelect.disabled = false;
             
-            // Si es SUR, mostrar input para número de cuadra (sin diagrama)
             if (zona === 'sur') {
                 if (costaneraInfo) costaneraInfo.style.display = 'block';
             }
@@ -116,7 +252,6 @@ function initPaginaPrincipal() {
 
     // Evento cambio de subzona
     subZonaSelect.addEventListener('change', function() {
-        console.log('Subzona seleccionada:', this.value);
         subzonaSeleccionada = this.value;
         verificarHabilitarBoton();
     });
@@ -129,7 +264,7 @@ function initPaginaPrincipal() {
         });
     }
 
-    // Botón iniciar encuesta
+    // Botón iniciar
     btnIniciar.addEventListener('click', function() {
         const zona = zonaSelect.value;
         const subzona = subZonaSelect.value;
@@ -144,36 +279,27 @@ function initPaginaPrincipal() {
             }
         }
         
-        // Guardar en sessionStorage
         sessionStorage.setItem('zonaEncuesta', zona);
         sessionStorage.setItem('subzonaEncuesta', subzona);
         sessionStorage.setItem('cuadraEncuesta', cuadra);
         
-        // Generar número de encuesta
         const numEncuesta = cargarNumeroEncuesta();
         sessionStorage.setItem('numeroEncuesta', numEncuesta.toString());
         
-        console.log('Datos guardados en sessionStorage:', {
-            zona, subzona, cuadra, numero: numEncuesta
-        });
-        
-        // Redirigir
         window.location.href = 'encuesta.html';
     });
 
     verificarHabilitarBoton();
 }
 
-// Función para verificar si el botón de iniciar debe estar habilitado
+// ===== VERIFICAR BOTÓN =====
 function verificarHabilitarBoton() {
     const zonaSelect = document.getElementById('zonaPrincipal');
     const subZonaSelect = document.getElementById('subZona');
     const btnIniciar = document.getElementById('btnIniciarEncuesta');
     const numeroCuadra = document.getElementById('numeroCuadra');
     
-    if (!zonaSelect || !subZonaSelect || !btnIniciar) {
-        return;
-    }
+    if (!zonaSelect || !subZonaSelect || !btnIniciar) return;
     
     let habilitado = false;
     
@@ -181,9 +307,7 @@ function verificarHabilitarBoton() {
         if (zonaSelect.value === 'sur' && subZonaSelect.value === 'La Costanera (Dividido en 25 Cuadras)') {
             if (numeroCuadra) {
                 const val = parseInt(numeroCuadra.value);
-                if (val >= 1 && val <= 25) {
-                    habilitado = true;
-                }
+                if (val >= 1 && val <= 25) habilitado = true;
             }
         } else {
             habilitado = true;
@@ -193,11 +317,10 @@ function verificarHabilitarBoton() {
     btnIniciar.disabled = !habilitado;
 }
 
-// Inicializar la página de encuesta (encuesta.html)
+// ===== INICIALIZAR PÁGINA DE ENCUESTA =====
 function initPaginaEncuesta() {
-    console.log('Inicializando página de encuesta...');
+    console.log('📄 Inicializando página de encuesta...');
     
-    // Mostrar zona y subzona seleccionadas
     const zona = sessionStorage.getItem('zonaEncuesta') || 'No seleccionada';
     const subzona = sessionStorage.getItem('subzonaEncuesta') || 'No seleccionada';
     const cuadra = sessionStorage.getItem('cuadraEncuesta') || '';
@@ -207,13 +330,11 @@ function initPaginaEncuesta() {
     const subzonaElem = document.getElementById('subzonaSeleccionada');
     const numElem = document.getElementById('numeroEncuesta');
     
-    // Mostrar la zona con su nombre completo y color
     const zonaNombre = zonasData[zona]?.nombre || zona;
     const emojiZona = zona === 'norte' ? '🟨' : zona === 'centro' ? '🟧' : zona === 'sur' ? '🟦' : '📍';
     
     if (zonaElem) {
         zonaElem.textContent = `${emojiZona} ${zonaNombre}`;
-        // Agregar clase de color para el indicador
         if (zona === 'norte') zonaElem.style.color = '#f39c12';
         else if (zona === 'centro') zonaElem.style.color = '#e67e22';
         else if (zona === 'sur') zonaElem.style.color = '#2980b9';
@@ -225,7 +346,7 @@ function initPaginaEncuesta() {
     
     if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
 
-    // Mostrar pregunta abierta si se selecciona Regular, Malo o Muy malo
+    // Mostrar pregunta abierta
     const preguntasCalificacion = ['p2', 'p4', 'p5'];
     preguntasCalificacion.forEach(id => {
         document.querySelectorAll(`input[name="${id}"]`).forEach(radio => {
@@ -234,18 +355,15 @@ function initPaginaEncuesta() {
                 if (motivoDiv) {
                     if (['regular', 'malo'].includes(this.value)) {
                         motivoDiv.style.display = 'block';
-                    } else if (this.value === 'muy-bueno' || this.value === 'nsnr') {
-                        if (!document.querySelector(`input[name="${id}"]:checked`) || 
-                            ['muy-bueno', 'nsnr'].includes(document.querySelector(`input[name="${id}"]:checked`).value)) {
-                            motivoDiv.style.display = 'none';
-                        }
+                    } else {
+                        motivoDiv.style.display = 'none';
                     }
                 }
             });
         });
     });
 
-    // Mostrar/ocultar bloque 2 según respuesta
+    // Mostrar/ocultar bloque 2
     document.querySelectorAll('input[name="p6"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const continuacion = document.getElementById('bloque2Continuacion');
@@ -259,26 +377,17 @@ function initPaginaEncuesta() {
     const btnGuardar = document.getElementById('btnGuardar');
     if (btnGuardar) {
         btnGuardar.addEventListener('click', function() {
-            console.log('Botón guardar clickeado');
-            
             if (validarFormulario()) {
-                console.log('Formulario válido, recolectando datos...');
                 const datos = recolectarDatos();
-                console.log('Datos recolectados:', datos);
                 guardarDatos(datos);
-            } else {
-                console.log('Formulario no válido');
             }
         });
-    } else {
-        console.error('No se encontró el botón guardar');
     }
 }
 
-// Función para validar el formulario
+// ===== VALIDAR FORMULARIO =====
 function validarFormulario() {
     const camposRequeridos = ['sexo', 'edad', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p10', 'p11', 'p13'];
-    let valid = true;
     let camposFaltantes = [];
     
     camposRequeridos.forEach(id => {
@@ -291,20 +400,17 @@ function validarFormulario() {
                           id === 'p13' ? 'Pregunta 13' :
                           `Pregunta ${id.replace('p', '')}`;
             camposFaltantes.push(nombre);
-            valid = false;
         }
     });
     
-    // Validar pregunta 9 (ranking)
     for (let i = 1; i <= 3; i++) {
         const select = document.querySelector(`select[name="p9_${i}"]`);
         if (!select || !select.value) {
             camposFaltantes.push(`Pregunta 9 - Problema #${i}`);
-            valid = false;
         }
     }
     
-    if (!valid) {
+    if (camposFaltantes.length > 0) {
         alert(`Por favor, complete todos los campos obligatorios:\n- ${camposFaltantes.join('\n- ')}`);
         return false;
     }
@@ -312,72 +418,53 @@ function validarFormulario() {
     return true;
 }
 
-// Función para recolectar datos del formulario
+// ===== RECOLECTAR DATOS =====
 function recolectarDatos() {
     const zona = sessionStorage.getItem('zonaEncuesta') || '';
     const subzona = sessionStorage.getItem('subzonaEncuesta') || '';
     const cuadra = sessionStorage.getItem('cuadraEncuesta') || '';
     const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
     
-    const datos = {
-        // Metadatos
+    return {
         fecha: new Date().toISOString(),
         numeroEncuesta: numEncuesta,
         zona: zona,
         zonaNombre: zonasData[zona]?.nombre || zona,
         subzona: subzona,
         cuadra: cuadra,
-        
-        // Bloque 0 - Datos del entrevistado
         sexo: document.querySelector('input[name="sexo"]:checked')?.value || '',
         edad: document.querySelector('input[name="edad"]:checked')?.value || '',
-        
-        // Bloque 1
         p1: document.querySelector('input[name="p1"]:checked')?.value || '',
         p2: document.querySelector('input[name="p2"]:checked')?.value || '',
         p3: document.querySelector('input[name="p3"]:checked')?.value || '',
         p4: document.querySelector('input[name="p4"]:checked')?.value || '',
         p5: document.querySelector('input[name="p5"]:checked')?.value || '',
         p5_motivo: document.querySelector('textarea[name="p5_motivo"]')?.value || '',
-        
-        // Bloque 2
         p6: document.querySelector('input[name="p6"]:checked')?.value || '',
         p7_salud: document.querySelector('input[name="p7_salud"]')?.checked || false,
         p7_documentacion: document.querySelector('input[name="p7_doc"]')?.checked || false,
         p7_legal: document.querySelector('input[name="p7_legal"]')?.checked || false,
         p7_otro: document.querySelector('input[name="p7_otro"]')?.value || '',
         p8: document.querySelector('input[name="p8"]:checked')?.value || '',
-        
-        // Bloque 3
         p9_1: document.querySelector('select[name="p9_1"]')?.value || '',
         p9_2: document.querySelector('select[name="p9_2"]')?.value || '',
         p9_3: document.querySelector('select[name="p9_3"]')?.value || '',
         p10: document.querySelector('input[name="p10"]:checked')?.value || '',
         p10_otro: document.querySelector('input[name="p10_otro"]')?.value || '',
-        
-        // Bloque 4
         p11: document.querySelector('input[name="p11"]:checked')?.value || '',
         p11_otro: document.querySelector('input[name="p11_otro"]')?.value || '',
         p12: document.querySelector('textarea[name="p12"]')?.value || '',
         p13: document.querySelector('input[name="p13"]:checked')?.value || '',
         p13_otro: document.querySelector('input[name="p13_otro"]')?.value || '',
         p14: document.querySelector('textarea[name="p14"]')?.value || '',
-        
-        // Bloque 5
         p15: document.querySelector('textarea[name="p15"]')?.value || ''
     };
-    
-    return datos;
 }
 
-// ===== GUARDAR EN GOOGLE SHEETS =====
+// ===== GUARDAR DATOS EN GOOGLE SHEETS =====
 function guardarDatos(datos) {
-    // URL de tu Google Apps Script (COPIA LA TUYA)
-    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4kke--TFBAv_pZSjhabruoDUcSSVD-eJTKUtlBfuiYUotLtzyX_XY6pOllU5Cb-0L/exec';
+    console.log('📤 Enviando datos a Google Sheets...');
     
-    console.log('Intentando guardar datos en Google Sheets...');
-    
-    // Mostrar mensaje de "guardando"
     const btnGuardar = document.getElementById('btnGuardar');
     const textoOriginal = btnGuardar.textContent;
     btnGuardar.textContent = '⏳ Guardando...';
@@ -385,22 +472,22 @@ function guardarDatos(datos) {
     
     fetch(GOOGLE_SHEETS_URL, {
         method: 'POST',
-        mode: 'no-cors', // Importante para Google Sheets
+        mode: 'no-cors',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(datos)
     })
-    .then(response => {
+    .then(() => {
+        // No-cors no permite leer la respuesta, pero sabemos que se envió
         console.log('✅ Datos enviados correctamente');
         btnGuardar.textContent = '✅ ¡Guardado!';
         
-        // También guardar localmente como backup
+        // Guardar backup local
         guardarBackupLocal(datos);
         
-        alert(`✅ Encuesta #${datos.numeroEncuesta} guardada correctamente en la nube!`);
+        alert(`✅ Encuesta #${datos.numeroEncuesta} guardada correctamente!`);
         
-        // Redirigir después de 1 segundo
         setTimeout(() => {
             window.location.href = 'gracias.html';
         }, 1000);
@@ -410,7 +497,6 @@ function guardarDatos(datos) {
         btnGuardar.textContent = textoOriginal;
         btnGuardar.disabled = false;
         
-        // Si falla, intentar guardar localmente
         if (confirm('❌ Error de conexión. ¿Guardar la encuesta localmente para enviar después?')) {
             guardarBackupLocal(datos);
             alert('✅ Encuesta guardada localmente. Se enviará cuando tengas conexión.');
@@ -419,7 +505,7 @@ function guardarDatos(datos) {
     });
 }
 
-// Función para guardar backup local (por si falla la conexión)
+// ===== BACKUP LOCAL =====
 function guardarBackupLocal(datos) {
     let pendientes = JSON.parse(localStorage.getItem('encuestas_pendientes') || '[]');
     pendientes.push(datos);
@@ -427,17 +513,17 @@ function guardarBackupLocal(datos) {
     console.log('📦 Backup local guardado');
 }
 
-// Función para sincronizar encuestas pendientes (ejecutar desde consola)
+// ===== SINCronizar PENDIENTES =====
 function sincronizarPendientes() {
-    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec';
     const pendientes = JSON.parse(localStorage.getItem('encuestas_pendientes') || '[]');
     
     if (pendientes.length === 0) {
-        alert('No hay encuestas pendientes');
+        alert('📭 No hay encuestas pendientes');
         return;
     }
     
     console.log(`📤 Enviando ${pendientes.length} encuestas pendientes...`);
+    alert(`📤 Enviando ${pendientes.length} encuestas pendientes...`);
     
     let enviadas = 0;
     let errores = 0;
@@ -465,191 +551,65 @@ function sincronizarPendientes() {
     });
 }
 
-// Hacer función accesible desde consola
-window.sincronizarPendientes = sincronizarPendientes;
-
-// ===== FUNCIONES DE ESTADÍSTICAS =====
-
-function actualizarEstadisticas() {
-    console.log('Actualizando estadísticas...');
-    
-    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
-    const total = encuestas.length;
-    
-    let conteoZonas = { norte: 0, centro: 0, sur: 0 };
-    let conteoSubzonas = {};
-    
-    encuestas.forEach(enc => {
-        const zona = enc.zona || '';
-        if (zona && conteoZonas.hasOwnProperty(zona)) {
-            conteoZonas[zona]++;
-        }
-        
-        const subzona = enc.subzona || 'Sin especificar';
-        if (!conteoSubzonas[subzona]) {
-            conteoSubzonas[subzona] = 0;
-        }
-        conteoSubzonas[subzona]++;
-    });
-    
-    const totalElem = document.getElementById('totalEncuestas');
-    const norteElem = document.getElementById('statsNorte');
-    const centroElem = document.getElementById('statsCentro');
-    const surElem = document.getElementById('statsSur');
-    const detalleElem = document.getElementById('subzonasDetalle');
-    
-    if (totalElem) totalElem.textContent = total;
-    if (norteElem) norteElem.textContent = conteoZonas.norte;
-    if (centroElem) centroElem.textContent = conteoZonas.centro;
-    if (surElem) surElem.textContent = conteoZonas.sur;
-    
-    if (detalleElem) {
-        detalleElem.innerHTML = '';
-        const subzonasOrdenadas = Object.entries(conteoSubzonas)
-            .sort((a, b) => b[1] - a[1]);
-        
-        if (subzonasOrdenadas.length === 0) {
-            detalleElem.innerHTML = '<p style="color: #95a5a6; font-style: italic;">No hay encuestas registradas aún</p>';
-        } else {
-            subzonasOrdenadas.forEach(([nombre, cantidad]) => {
-                const div = document.createElement('div');
-                div.className = 'subzona-item';
-                div.innerHTML = `
-                    <span class="subzona-nombre">${nombre}</span>
-                    <span class="subzona-cantidad">${cantidad}</span>
-                `;
-                detalleElem.appendChild(div);
-            });
-        }
-    }
-}
-
-// Función para ver estadísticas completas (SOLO PARA ADMIN - desde consola)
+// ===== FUNCIONES ADMIN (desde consola) =====
 function verEstadisticasCompletas() {
-    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
-    const total = encuestas.length;
-    
-    let conteoZonas = { norte: 0, centro: 0, sur: 0 };
-    let conteoSubzonas = {};
-    let conteoSexo = { masculino: 0, femenino: 0 };
-    let conteoEdad = {};
-    
-    encuestas.forEach(enc => {
-        const zona = enc.zona || '';
-        if (zona && conteoZonas.hasOwnProperty(zona)) {
-            conteoZonas[zona]++;
-        }
-        
-        const subzona = enc.subzona || 'Sin especificar';
-        if (!conteoSubzonas[subzona]) {
-            conteoSubzonas[subzona] = 0;
-        }
-        conteoSubzonas[subzona]++;
-        
-        if (enc.sexo && conteoSexo.hasOwnProperty(enc.sexo)) {
-            conteoSexo[enc.sexo]++;
-        }
-        
-        const edad = enc.edad || 'Sin especificar';
-        if (!conteoEdad[edad]) {
-            conteoEdad[edad] = 0;
-        }
-        conteoEdad[edad]++;
-    });
-    
-    let mensaje = `📊 ===== ESTADÍSTICAS COMPLETAS =====\n\n`;
-    mensaje += `📝 Total de encuestas: ${total}\n\n`;
-    mensaje += `📍 Por zona:\n`;
-    mensaje += `   🟨 NORTE: ${conteoZonas.norte}\n`;
-    mensaje += `   🟧 CENTRO: ${conteoZonas.centro}\n`;
-    mensaje += `   🟦 SUR: ${conteoZonas.sur}\n\n`;
-    mensaje += `👤 Por sexo:\n`;
-    mensaje += `   ♂ Masculino: ${conteoSexo.masculino}\n`;
-    mensaje += `   ♀ Femenino: ${conteoSexo.femenino}\n\n`;
-    mensaje += `📅 Por rango etario:\n`;
-    const order = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76-100'];
-    Object.entries(conteoEdad)
-        .sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]))
-        .forEach(([rango, cantidad]) => {
-            mensaje += `   ${rango} años: ${cantidad}\n`;
+    obtenerEstadisticasDesdeGoogle()
+        .then(data => {
+            console.log('📊 ===== ESTADÍSTICAS COMPLETAS =====');
+            console.log(`📝 Total de encuestas: ${data.total || 0}`);
+            console.log('📍 Por zona:');
+            console.log(`   🟨 NORTE: ${data.porZona?.norte || 0}`);
+            console.log(`   🟧 CENTRO: ${data.porZona?.centro || 0}`);
+            console.log(`   🟦 SUR: ${data.porZona?.sur || 0}`);
+            console.log('📍 Por subzona:');
+            if (data.porSubzona) {
+                Object.entries(data.porSubzona)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([nombre, cantidad]) => {
+                        console.log(`   ${nombre}: ${cantidad}`);
+                    });
+            }
+            
+            let mensaje = `📊 TOTAL DE ENCUESTAS: ${data.total || 0}\n\n`;
+            mensaje += `📍 Por zona:\n`;
+            mensaje += `   🟨 NORTE: ${data.porZona?.norte || 0}\n`;
+            mensaje += `   🟧 CENTRO: ${data.porZona?.centro || 0}\n`;
+            mensaje += `   🟦 SUR: ${data.porZona?.sur || 0}`;
+            alert(mensaje);
+        })
+        .catch(error => {
+            console.error('❌ Error:', error);
+            alert('❌ Error al obtener estadísticas');
         });
-    
-    alert(mensaje);
-    console.log(mensaje);
-    
-    return { total, conteoZonas, conteoSubzonas, conteoSexo, conteoEdad };
 }
 
-// Función para exportar a CSV (SOLO PARA ADMIN - desde consola)
 function exportarEncuestasCSV() {
-    const encuestas = JSON.parse(localStorage.getItem('encuestas') || '[]');
-    
-    if (encuestas.length === 0) {
-        alert('📭 No hay encuestas guardadas para exportar');
-        return;
-    }
-    
-    const columnas = [
-        'numeroEncuesta', 'fecha', 'zonaNombre', 'subzona', 'cuadra',
-        'sexo', 'edad',
-        'p1', 'p2', 'p3', 'p4', 'p5', 'p5_motivo',
-        'p6', 'p7_salud', 'p7_documentacion', 'p7_legal', 'p7_otro', 'p8',
-        'p9_1', 'p9_2', 'p9_3', 'p10', 'p10_otro',
-        'p11', 'p11_otro', 'p12', 'p13', 'p13_otro', 'p14',
-        'p15'
-    ];
-    
-    let csv = columnas.join(',') + '\n';
-    
-    encuestas.forEach(enc => {
-        const row = columnas.map(col => {
-            let val = enc[col] || '';
-            if (typeof val === 'string') {
-                val = val.replace(/"/g, '""');
-                if (val.includes(',') || val.includes('"') || val.includes('\n')) {
-                    val = `"${val}"`;
-                }
-            }
-            return val;
-        });
-        csv += row.join(',') + '\n';
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `encuestas_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    alert(`✅ Se exportaron ${encuestas.length} encuestas correctamente`);
+    alert('📥 Para exportar a CSV, ve a tu Google Sheet y usa: Archivo → Descargar → CSV');
+    console.log('📥 Abre tu Google Sheet y ve a: Archivo → Descargar → CSV');
 }
 
 function borrarTodasEncuestas() {
-    if (confirm('⚠️ ¿Estás seguro de borrar TODAS las encuestas guardadas?')) {
-        if (confirm('Confirmación final: ¿Borrar todas las encuestas?')) {
+    if (confirm('⚠️ ¿Estás seguro de borrar TODAS las encuestas guardadas localmente?')) {
+        if (confirm('Confirmación final: ¿Borrar todas las encuestas locales?')) {
             localStorage.removeItem('encuestas');
-            alert('✅ Todas las encuestas han sido borradas');
+            localStorage.removeItem('encuestas_pendientes');
+            alert('✅ Encuestas locales borradas');
             actualizarEstadisticas();
         }
     }
 }
 
-// ===== INICIALIZACIÓN PRINCIPAL =====
+// ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado completamente');
-    console.log('Ruta actual:', window.location.pathname);
+    console.log('🚀 Inicializando aplicación...');
     
     const path = window.location.pathname;
     
     if (path.includes('encuesta.html')) {
-        console.log('Página detectada: encuesta.html');
+        console.log('📄 Página: encuesta.html');
         initPaginaEncuesta();
     } else if (path.includes('gracias.html')) {
-        console.log('Página detectada: gracias.html');
+        console.log('📄 Página: gracias.html');
         const zona = sessionStorage.getItem('zonaEncuesta') || 'No especificada';
         const subzona = sessionStorage.getItem('subzonaEncuesta') || 'No especificada';
         const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
@@ -663,13 +623,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (zonaElem) zonaElem.textContent = zonasData[zona]?.nombre || zona;
         if (subzonaElem) subzonaElem.textContent = subzona + (cuadra ? ` (Cuadra ${cuadra})` : '');
     } else {
-        console.log('Página detectada: index.html (por defecto)');
+        console.log('📄 Página: index.html');
         initPaginaPrincipal();
-        setTimeout(actualizarEstadisticas, 100);
+        // Cargar estadísticas después de un pequeño delay
+        setTimeout(actualizarEstadisticas, 500);
     }
 });
 
-// Funciones disponibles SOLO DESDE CONSOLA (para el administrador)
+// Funciones disponibles desde consola
+window.sincronizarPendientes = sincronizarPendientes;
 window.exportarEncuestasCSV = exportarEncuestasCSV;
 window.verEstadisticasCompletas = verEstadisticasCompletas;
 window.borrarTodasEncuestas = borrarTodasEncuestas;
