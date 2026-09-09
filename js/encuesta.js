@@ -67,28 +67,123 @@ function volverAlInicio() {
     }
 }
 
-// ===== FUNCIÓN PARA OBTENER ESTADÍSTICAS DESDE GOOGLE SHEETS =====
+// ===== FUNCIÓN PARA OBTENER ESTADÍSTICAS DESDE CSV PUBLICADO =====
 function obtenerEstadisticasDesdeGoogle() {
-    console.log('📊 Obteniendo estadísticas desde Google Sheets...');
+    console.log('📊 Obteniendo estadísticas desde Google Sheets (CSV)...');
     
-    return fetch(GOOGLE_SHEETS_URL, {
-        method: 'GET'
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error de red: ' + response.status);
+    // La URL de tu CSV publicado
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTuURL/pub?output=csv';
+    
+    return fetch(csvUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener el CSV: ' + response.status);
+            }
+            return response.text();
+        })
+        .then(csvText => {
+            // Convertir CSV a datos
+            const lines = csvText.split('\n');
+            
+            // Si solo hay encabezados o está vacío
+            if (lines.length <= 1) {
+                return {
+                    total: 0,
+                    porZona: { norte: 0, centro: 0, sur: 0 },
+                    porSubzona: {}
+                };
+            }
+            
+            // Obtener encabezados (primera línea)
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            // Encontrar índices de las columnas
+            const idxZonaNombre = headers.indexOf('zonaNombre');
+            const idxSubzona = headers.indexOf('subzona');
+            const idxZona = headers.indexOf('zona');
+            
+            // Si no encuentra las columnas, mostrar error
+            if (idxZonaNombre === -1 || idxSubzona === -1) {
+                console.warn('No se encontraron las columnas esperadas. Usando índices por posición.');
+                // Usar índices por posición (D=3, E=4)
+                return procesarCSVPorPosicion(lines);
+            }
+            
+            // Procesar CSV usando encabezados
+            return procesarCSVConHeaders(lines, idxZona, idxZonaNombre, idxSubzona);
+        })
+        .catch(error => {
+            console.error('❌ Error al obtener estadísticas:', error);
+            return obtenerEstadisticasLocales();
+        });
+}
+
+// Función para procesar CSV usando encabezados
+function procesarCSVConHeaders(lines, idxZona, idxZonaNombre, idxSubzona) {
+    const porZona = { norte: 0, centro: 0, sur: 0 };
+    const porSubzona = {};
+    let total = 0;
+    
+    // Saltar encabezados (línea 0)
+    for (let i = 1; i < lines.length; i++) {
+        const row = lines[i].split(',').map(cell => cell.trim());
+        
+        // Saltar filas vacías
+        if (row.length === 1 && row[0] === '') continue;
+        
+        const zona = row[idxZona] || '';
+        const zonaNombre = row[idxZonaNombre] || '';
+        const subzona = row[idxSubzona] || 'Sin especificar';
+        
+        // Contar por zona (usando el código de zona)
+        if (zona && porZona.hasOwnProperty(zona)) {
+            porZona[zona]++;
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log('📊 Estadísticas obtenidas:', data);
-        return data;
-    })
-    .catch(error => {
-        console.error('❌ Error al obtener estadísticas:', error);
-        // Si falla, intentar con datos locales
-        return obtenerEstadisticasLocales();
-    });
+        
+        // Contar por subzona
+        if (!porSubzona[subzona]) {
+            porSubzona[subzona] = 0;
+        }
+        porSubzona[subzona]++;
+        total++;
+    }
+    
+    return { total, porZona, porSubzona };
+}
+
+// Función de respaldo usando posiciones (D=3, E=4)
+function procesarCSVPorPosicion(lines) {
+    const porZona = { norte: 0, centro: 0, sur: 0 };
+    const porSubzona = {};
+    let total = 0;
+    
+    // Saltar encabezados (línea 0)
+    for (let i = 1; i < lines.length; i++) {
+        const row = lines[i].split(',').map(cell => cell.trim());
+        
+        // Saltar filas vacías
+        if (row.length === 1 && row[0] === '') continue;
+        
+        // Columna D = índice 3 (zonaNombre)
+        // Columna E = índice 4 (subzona)
+        // Columna C = índice 2 (zona)
+        const zona = row[2] || '';
+        const subzona = row[4] || 'Sin especificar';
+        
+        // Contar por zona
+        if (zona && porZona.hasOwnProperty(zona)) {
+            porZona[zona]++;
+        }
+        
+        // Contar por subzona
+        if (!porSubzona[subzona]) {
+            porSubzona[subzona] = 0;
+        }
+        porSubzona[subzona]++;
+        total++;
+    }
+    
+    return { total, porZona, porSubzona };
 }
 
 // ===== FUNCIÓN PARA OBTENER ESTADÍSTICAS LOCALES (BACKUP) =====
