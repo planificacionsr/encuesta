@@ -373,7 +373,7 @@ function recolectarDatos() {
 // ===== GUARDAR EN GOOGLE SHEETS =====
 function guardarDatos(datos) {
     // URL de tu Google Apps Script (COPIA LA TUYA)
-    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec';
+    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4kke--TFBAv_pZSjhabruoDUcSSVD-eJTKUtlBfuiYUotLtzyX_XY6pOllU5Cb-0L/exec';
     
     console.log('Intentando guardar datos en Google Sheets...');
     
