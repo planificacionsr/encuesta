@@ -1,6 +1,6 @@
 // ===== CONFIGURACIÓN =====
 // 🔴 CAMBIA ESTA URL POR LA TUYA (la que copiaste de Google Apps Script)
-const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/TU_URL_AQUI/exec';
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby5PZXTs5sfuO0Y6ZpGUvl3aQPBEtrkyp-X_M38YVSjjwcDmNdEJLddjivNnE8wGnSW/exec';
 
 // Datos de las zonas
 const zonasData = {
