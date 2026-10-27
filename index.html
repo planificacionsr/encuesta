@@ -14,71 +14,23 @@
         </header>
 
         <div class="card">
-            <h2>BLOQUE 0 - Seleccionar área de encuesta</h2>
+            <h2>BLOQUE 0 - Seleccionar distrito y subzona</h2>
             
             <div class="form-group">
-                <label for="zonaPrincipal">Zona Principal:</label>
-                <select id="zonaPrincipal" required>
-                    <option value="">Seleccione una zona...</option>
-                    <option value="norte">🟨 NORTE</option>
-                    <option value="centro">🟧 CENTRO</option>
-                    <option value="sur">🟦 SUR</option>
+                <label for="distritoPrincipal">Distrito:</label>
+                <select id="distritoPrincipal" required>
+                    <option value="">Seleccione un distrito...</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="subZona">Subzona:</label>
                 <select id="subZona" required disabled>
-                    <option value="">Primero seleccione una zona</option>
+                    <option value="">Primero seleccione un distrito</option>
                 </select>
             </div>
 
-            <!-- Subzona especial para La Costanera - SOLO INPUT NUMÉRICO -->
-            <div id="costaneraInfo" style="display:none;">
-                <div class="form-group">
-                    <label for="numeroCuadra">Número de cuadra (1-25):</label>
-                    <input type="number" id="numeroCuadra" min="1" max="25" placeholder="Ingrese el número de cuadra (1-25)">
-                </div>
-            </div>
-
             <button id="btnIniciarEncuesta" class="btn-primary" disabled>Iniciar Encuesta</button>
-        </div>
-
-        <div class="info-extra">
-            <p><strong>Estimación de viviendas:</strong> <span id="estimacionViviendas">-</span></p>
-        </div>
-
-        <!-- Panel de estadísticas - SOLO VISUAL, SIN BOTONES -->
-        <div class="card estadisticas">
-            <h2>📊 Estadísticas de Encuestas</h2>
-            <div class="stats-grid">
-                <div class="stat-item total">
-                    <span class="stat-label">Total Encuestas</span>
-                    <span class="stat-number" id="totalEncuestas">0</span>
-                </div>
-                <div class="stat-item norte">
-                    <span class="stat-label">🟨 NORTE</span>
-                    <span class="stat-number" id="statsNorte">0</span>
-                </div>
-                <div class="stat-item centro">
-                    <span class="stat-label">🟧 CENTRO</span>
-                    <span class="stat-number" id="statsCentro">0</span>
-                </div>
-                <div class="stat-item sur">
-                    <span class="stat-label">🟦 SUR</span>
-                    <span class="stat-number" id="statsSur">0</span>
-                </div>
-            </div>
-            
-            <div id="detalleSubzonas" style="margin-top: 15px;">
-                <p><strong>Detalle por subzona:</strong></p>
-                <div id="subzonasDetalle" class="subzonas-detalle"></div>
-            </div>
-
-            <!-- Solo texto informativo, sin botones -->
-            <p style="margin-top: 15px; color: #95a5a6; font-size: 0.85em; text-align: center;">
-                ℹ️ Los datos se guardan automáticamente en el navegador
-            </p>
         </div>
     </div>
 
