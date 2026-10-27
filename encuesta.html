@@ -13,14 +13,14 @@
             <p>Municipalidad de Santa Rosa</p>
         </header>
 
-        <!-- INDICADOR DE ZONA MEJORADO -->
+        <!-- INDICADOR -->
         <div class="encuesta-progress">
             <div class="progress-item">
-                <span class="progress-label">📍 Zona:</span>
-                <span class="progress-value" id="zonaSeleccionada">-</span>
+                <span class="progress-label">🏛️ Distrito:</span>
+                <span class="progress-value" id="distritoSeleccionado">-</span>
             </div>
             <div class="progress-item">
-                <span class="progress-label">🏘️ Subzona:</span>
+                <span class="progress-label">📍 Subzona:</span>
                 <span class="progress-value" id="subzonaSeleccionada">-</span>
             </div>
             <div class="progress-item">
@@ -29,15 +29,14 @@
             </div>
         </div>
 
-        <!-- BOTÓN VOLVER -->
         <div style="margin-bottom: 20px;">
             <button onclick="volverAlInicio()" class="btn-volver">
-                ⬅ Volver a seleccionar zona
+                ⬅ Volver a seleccionar distrito
             </button>
         </div>
 
         <form id="formEncuesta">
-            <!-- BLOQUE 0 - Datos del entrevistado -->
+            <!-- BLOQUE 0 -->
             <div class="bloque">
                 <h2>BLOQUE 0 — Datos del entrevistado</h2>
                 
@@ -63,7 +62,7 @@
                 </div>
             </div>
 
-            <!-- BLOQUE 1 — Servicios y limpieza -->
+            <!-- BLOQUE 1 -->
             <div class="bloque">
                 <h2>BLOQUE 1 — Servicios y limpieza</h2>
                 
@@ -92,12 +91,12 @@
                     <div class="opciones">
                         <label><input type="radio" name="p3" value="si"> Sí, siempre o casi siempre</label>
                         <label><input type="radio" name="p3" value="no-conoce"> No, porque no conozco el servicio o no sé cómo separar</label>
-                        <label><input type="radio" name="p3" value="no-otros"> No, por otros motivos (horarios, falta de confianza, etc.)</label>
+                        <label><input type="radio" name="p3" value="no-otros"> No, por otros motivos</label>
                     </div>
                 </div>
 
                 <div class="pregunta">
-                    <p><strong>4.</strong> ¿Cómo califica la limpieza general de su barrio? (calles, acequias, plazas)</p>
+                    <p><strong>4.</strong> ¿Cómo califica la limpieza general de su barrio?</p>
                     <div class="opciones">
                         <label><input type="radio" name="p4" value="muy-bueno"> Muy bueno / Bueno</label>
                         <label><input type="radio" name="p4" value="regular"> Regular</label>
@@ -118,11 +117,11 @@
 
                 <div class="pregunta" id="preguntaAbierta1" style="display:none;">
                     <p><strong>→</strong> ¿Cuál es el motivo principal de su disconformidad?</p>
-                    <textarea name="p5_motivo" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <textarea name="p5_motivo" rows="3" placeholder="Registre textualmente..."></textarea>
                 </div>
             </div>
 
-            <!-- BLOQUE 2 — Operativos territoriales -->
+            <!-- BLOQUE 2 -->
             <div class="bloque">
                 <h2>BLOQUE 2 — Operativos territoriales</h2>
                 
@@ -141,7 +140,7 @@
                             <label><input type="checkbox" name="p7_salud" value="salud"> Salud</label>
                             <label><input type="checkbox" name="p7_doc" value="documentacion"> Documentación</label>
                             <label><input type="checkbox" name="p7_legal" value="legal"> Asesoramiento legal</label>
-                            <label><input type="text" name="p7_otro" placeholder="Otro:" style="flex:1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; margin-left: 5px;"></label>
+                            <label><input type="text" name="p7_otro" placeholder="Otro:" style="flex:1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-left: 5px;"></label>
                         </div>
                     </div>
 
@@ -157,12 +156,12 @@
                 </div>
             </div>
 
-            <!-- BLOQUE 3 — Problemáticas -->
+            <!-- BLOQUE 3 -->
             <div class="bloque">
                 <h2>BLOQUE 3 — Problemáticas</h2>
                 
                 <div class="pregunta">
-                    <p><strong>9.</strong> ¿Cuáles considera que son los tres principales problemas del departamento de Santa Rosa? (Indique el orden: 1 el más importante)</p>
+                    <p><strong>9.</strong> ¿Cuáles considera que son los tres principales problemas del departamento de Santa Rosa?</p>
                     <div class="ranking">
                         <select name="p9_1">
                             <option value="">Seleccione el 1° problema...</option>
@@ -207,7 +206,7 @@
                 </div>
 
                 <div class="pregunta">
-                    <p><strong>10.</strong> ¿Cuál considera que es actualmente el principal problema de su barrio? (Seleccione una sola opción)</p>
+                    <p><strong>10.</strong> ¿Cuál considera que es actualmente el principal problema de su barrio?</p>
                     <div class="opciones">
                         <label><input type="radio" name="p10" value="inseguridad"> Inseguridad</label>
                         <label><input type="radio" name="p10" value="limpieza"> Falta de limpieza y mantenimiento del espacio público</label>
@@ -215,15 +214,15 @@
                         <label><input type="radio" name="p10" value="calles"> Mal estado o falta de pavimentación de calles y caminos</label>
                         <label><input type="radio" name="p10" value="contaminacion"> Contaminación u otros problemas ambientales</label>
                         <label><input type="radio" name="p10" value="iluminacion"> Falta, deterioro o insuficiencia del alumbrado público</label>
-                        <label><input type="radio" name="p10" value="infraestructura"> Falta o deterioro de infraestructura urbana (acequias, cordones, cunetas, veredas, plazas, espacios públicos, etc.)</label>
+                        <label><input type="radio" name="p10" value="infraestructura"> Falta o deterioro de infraestructura urbana</label>
                         <label><input type="radio" name="p10" value="salud"> Dificultades para acceder a servicios de salud</label>
-                        <label><input type="radio" name="p10" value="servicios"> Falta de acceso a servicios públicos o comunitarios (salud, educación, transporte, conectividad, atención municipal u otros)</label>
+                        <label><input type="radio" name="p10" value="servicios"> Falta de acceso a servicios públicos o comunitarios</label>
                         <label><input type="radio" name="p10" value="otro"> Otro: <input type="text" name="p10_otro" placeholder="Especifique"></label>
                     </div>
                 </div>
             </div>
 
-            <!-- BLOQUE 4 — Obras e intervenciones -->
+            <!-- BLOQUE 4 — Obras (DINÁMICO POR DISTRITO) -->
             <div class="bloque">
                 <h2>BLOQUE 4 — Obras e intervenciones</h2>
                 
@@ -231,7 +230,7 @@
                     <p><strong>11.</strong> ¿Cuál de las siguientes obras considera más relevante para el departamento? (una sola opción)</p>
                     <div class="opciones">
                         <label><input type="radio" name="p11" value="ruta50"> Repavimentación de Ruta Provincial 50</label>
-                        <label><input type="radio" name="p11" value="planta"> Planta de transferencia de residuos y erradicación del basural a cielo abierto</label>
+                        <label><input type="radio" name="p11" value="planta"> Planta de transferencia de residuos y erradicación del basural</label>
                         <label><input type="radio" name="p11" value="auditorio"> Auditorio Municipal</label>
                         <label><input type="radio" name="p11" value="parque"> Parque Ventura Segura</label>
                         <label><input type="radio" name="p11" value="otro"> Otra: <input type="text" name="p11_otro" placeholder="Especifique"></label>
@@ -240,39 +239,30 @@
 
                 <div class="pregunta">
                     <p><strong>12.</strong> ¿Por qué considera que esa obra es la más relevante?</p>
-                    <textarea name="p12" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <textarea name="p12" rows="3" placeholder="Registre textualmente..."></textarea>
                 </div>
 
+                <!-- PREGUNTA 13: DINÁMICA SEGÚN DISTRITO -->
                 <div class="pregunta">
-                    <p><strong>13.</strong> De las siguientes obras o intervenciones realizadas en Las Catitas, ¿cuál considera que tuvo mayor importancia? (Seleccione una sola opción)</p>
-                    <div class="opciones">
-                        <label><input type="radio" name="p13" value="ruta50"> Repavimentación de la Ruta Provincial N.º 50</label>
-                        <label><input type="radio" name="p13" value="basural"> Erradicación del basural y mejora del sistema de gestión de residuos</label>
-                        <label><input type="radio" name="p13" value="plaza-costanera"> Remodelación integral de la Plaza La Costanera y construcción del playón multideportivo</label>
-                        <label><input type="radio" name="p13" value="urbanizacion"> Urbanización de barrios Arenas y SUTE</label>
-                        <label><input type="radio" name="p13" value="ciclovia"> Construcción de la ciclovía de calle Guiñazú</label>
-                        <label><input type="radio" name="p13" value="terminal"> Refacción y ampliación de la Terminal de Ómnibus (Baños)</label>
-                        <label><input type="radio" name="p13" value="plazas"> Remodelación de las plazas Malvinas Argentinas y Sarmiento</label>
-                        <label><input type="radio" name="p13" value="led"> Recambio e instalación de luminarias LED en distintos sectores (La Costanera, calle Eliseo Ortiz, La Piedad, etc.)</label>
-                        <label><input type="radio" name="p13" value="repavimentacion"> Repavimentación de calles (Francisco Cirot, Emilio Civit y calles circundantes a Plaza Sarmiento)</label>
-                        <label><input type="radio" name="p13" value="paseo"> Construcción del Paseo Urbano Leonardo Favio</label>
-                        <label><input type="radio" name="p13" value="otro"> Otra obra o intervención: <input type="text" name="p13_otro" placeholder="Especifique"></label>
+                    <p><strong>13.</strong> De las siguientes obras o intervenciones realizadas en <strong><span id="nombreDistritoObras">su distrito</span></strong>, ¿cuál considera que tuvo mayor importancia? (una sola opción)</p>
+                    <div id="obrasDistritoContainer">
+                        <!-- Se llena dinámicamente desde JS -->
                     </div>
                 </div>
 
                 <div class="pregunta">
                     <p><strong>14.</strong> ¿Por qué considera que esa obra o intervención fue la más importante?</p>
-                    <textarea name="p14" rows="3" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <textarea name="p14" rows="3" placeholder="Registre textualmente..."></textarea>
                 </div>
             </div>
 
-            <!-- BLOQUE 5 — Sugerencias -->
+            <!-- BLOQUE 5 -->
             <div class="bloque">
                 <h2>BLOQUE 5 — Sugerencias</h2>
                 
                 <div class="pregunta">
                     <p><strong>15.</strong> ¿Qué servicio o mejora considera prioritaria para su barrio?</p>
-                    <textarea name="p15" rows="4" placeholder="Registre textualmente la respuesta..."></textarea>
+                    <textarea name="p15" rows="4" placeholder="Registre textualmente..."></textarea>
                 </div>
             </div>
 
