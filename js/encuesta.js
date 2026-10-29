@@ -21,42 +21,34 @@ const distritosData = {
     },
     'La Dormida': {
         subzonas: [
-            // RADIO URBANO NORTE
             { id: 1, name: 'Crespo Norte', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
             { id: 2, name: 'PROCREAR', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
             { id: 3, name: 'Saavedra y Colectoras Ruta 7', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
-            // RADIO URBANO SUR
             { id: 4, name: 'Crespo Sur', zona: 'RADIO URBANO SUR', orientacion: 'S' },
             { id: 5, name: 'San Cayetano III', zona: 'RADIO URBANO SUR', orientacion: 'S' },
-            // RADIO URBANO ESTE
             { id: 6, name: 'Nuevo Horizonte', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 7, name: '30 de Agosto y La Posta', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 8, name: 'SAAR', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 9, name: 'Cosquín', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 10, name: 'Remo Falciani (B° La Dormida)', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
-            // RURALES
             { id: 11, name: 'Gdor. Civit', zona: 'RURAL' },
             { id: 12, name: 'B° Parrales Mendocinos', zona: 'RURAL' }
         ]
     },
     'Las Catitas': {
         subzonas: [
-            // RADIO URBANO NORTE
             { id: 1, name: 'Los Espinillos y SUTE', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
             { id: 2, name: 'Arenas', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
             { id: 3, name: 'San Cayetano', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
             { id: 4, name: 'Guiñazú y colectoras', zona: 'RADIO URBANO NORTE', orientacion: 'N' },
-            // RADIO URBANO CENTRO
             { id: 5, name: 'Eulalia Calderón y Guiñazú', zona: 'RADIO URBANO CENTRO', orientacion: 'C' },
             { id: 6, name: 'Entre Emilio Civit y Uriburu', zona: 'RADIO URBANO CENTRO', orientacion: 'C' },
             { id: 7, name: 'B° Jardín Oeste', zona: 'RADIO URBANO CENTRO', orientacion: 'C' },
             { id: 8, name: 'Eliseo Ortiz', zona: 'RADIO URBANO CENTRO', orientacion: 'C' },
-            // RADIO URBANO SUR
             { id: 9, name: 'La Costanera ESTE', zona: 'RADIO URBANO SUR', orientacion: 'S' },
             { id: 10, name: 'La Costanera OESTE', zona: 'RADIO URBANO SUR', orientacion: 'S' },
             { id: 11, name: 'Las Chircas', zona: 'RADIO URBANO SUR', orientacion: 'S' },
             { id: 12, name: 'Cuadro Estación', zona: 'RADIO URBANO SUR', orientacion: 'S' },
-            // RURALES
             { id: 13, name: 'La Piedad (Entre Carballo y Galigniana)', zona: 'RURAL' },
             { id: 14, name: 'B° San Cayetano y Calle Arenas', zona: 'RURAL' },
             { id: 15, name: 'B° Cristo de La Piedad', zona: 'RURAL' },
@@ -68,18 +60,15 @@ const distritosData = {
     },
     'Villa Cabecera': {
         subzonas: [
-            // RADIO URBANO OESTE
             { id: 1, name: 'Centro Villa (Entre San Martín y Arenas)', zona: 'RADIO URBANO OESTE', orientacion: 'O' },
             { id: 2, name: 'Centro Villa (Entre Arenas y Alberdi)', zona: 'RADIO URBANO OESTE', orientacion: 'O' },
             { id: 3, name: 'B° Primavera', zona: 'RADIO URBANO OESTE', orientacion: 'O' },
             { id: 4, name: 'Cuadro Estación', zona: 'RADIO URBANO OESTE', orientacion: 'O' },
             { id: 5, name: 'Acceso Suárez', zona: 'RADIO URBANO OESTE', orientacion: 'O' },
-            // RADIO URBANO ESTE
             { id: 6, name: 'Centro Villa', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 7, name: 'SAAR', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 8, name: 'Angelino Arenas', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
             { id: 9, name: 'Barrio Disperso', zona: 'RADIO URBANO ESTE', orientacion: 'E' },
-            // RURALES
             { id: 10, name: 'La Costa', zona: 'RURAL' },
             { id: 11, name: 'B° Jardín (La Costa)', zona: 'RURAL' },
             { id: 12, name: 'B° Los Gringos y calle Unión', zona: 'RURAL' },
@@ -129,8 +118,6 @@ const obrasPorDistrito = {
 };
 
 // ===== VARIABLES GLOBALES =====
-let distritoSeleccionado = '';
-let subzonaSeleccionada = '';
 let numeroEncuesta = 1;
 
 // ===== FUNCIONES AUXILIARES =====
@@ -141,72 +128,24 @@ function cargarNumeroEncuesta() {
     return numeroEncuesta;
 }
 
+function volverAlDistrito() {
+    window.location.href = 'index.html';
+}
+
 function volverAlInicio() {
     if (confirm('¿Estás seguro de que quieres volver? Los datos del formulario se perderán.')) {
         window.location.href = 'index.html';
     }
 }
 
-// ===== GENERAR OPCIONES DE SUBZONAS AGRUPADAS =====
-function generarOpcionesSubzona(distrito) {
-    const subzonas = distritosData[distrito]?.subzonas || [];
-    
-    // Agrupar por zona
-    const grupos = {};
-    subzonas.forEach(sub => {
-        if (!grupos[sub.zona]) grupos[sub.zona] = [];
-        grupos[sub.zona].push(sub);
-    });
-    
-    // Orden de zonas: primero urbanas (por orientación N, C, S, E, O), luego rural
-    const ordenZonas = [
-        'RADIO URBANO NORTE',
-        'RADIO URBANO CENTRO',
-        'RADIO URBANO SUR',
-        'RADIO URBANO ESTE',
-        'RADIO URBANO OESTE',
-        'RURAL'
-    ];
-    
-    let html = '<option value="">Seleccione una subzona...</option>';
-    
-    ordenZonas.forEach(zona => {
-        if (grupos[zona] && grupos[zona].length > 0) {
-            // Título del grupo
-            let label = zona;
-            if (zona.includes('RADIO URBANO')) {
-                const orient = zona.replace('RADIO URBANO ', '');
-                const emoji = { 'NORTE': '⬆️', 'SUR': '⬇️', 'ESTE': '➡️', 'OESTE': '⬅️', 'CENTRO': '🎯' }[orient] || '📍';
-                label = `${emoji} ${zona}`;
-            } else {
-                label = `🌾 ${zona}`;
-            }
-            
-            html += `<optgroup label="${label}">`;
-            grupos[zona].forEach(sub => {
-                // Mostrar id y orientación
-                let displayName = `${sub.id}. ${sub.name}`;
-                if (sub.orientacion) {
-                    displayName += ` (${sub.orientacion})`;
-                }
-                html += `<option value="${sub.name}" data-id="${sub.id}" data-zona="${sub.zona}">${displayName}</option>`;
-            });
-            html += '</optgroup>';
-        }
-    });
-    
-    return html;
-}
-
-// ===== INICIALIZAR PÁGINA PRINCIPAL =====
-function initPaginaPrincipal() {
-    console.log('📄 Inicializando página principal...');
+// ===== PASO 1: INICIALIZAR PÁGINA DE DISTRITOS =====
+function initPaginaDistrito() {
+    console.log('📄 Inicializando página de distritos...');
     
     const distritoSelect = document.getElementById('distritoPrincipal');
-    const subZonaSelect = document.getElementById('subZona');
-    const btnIniciar = document.getElementById('btnIniciarEncuesta');
+    const btnIrSubzonas = document.getElementById('btnIrSubzonas');
 
-    if (!distritoSelect || !subZonaSelect || !btnIniciar) {
+    if (!distritoSelect || !btnIrSubzonas) {
         console.error('❌ No se encontraron los elementos necesarios');
         return;
     }
@@ -219,70 +158,162 @@ function initPaginaPrincipal() {
         distritoSelect.appendChild(option);
     });
 
-    // Evento cambio de distrito
+    // Habilitar botón al seleccionar distrito
     distritoSelect.addEventListener('change', function() {
-        const distrito = this.value;
-        distritoSeleccionado = distrito;
-        
-        subZonaSelect.innerHTML = '<option value="">Primero seleccione un distrito</option>';
-        subZonaSelect.disabled = true;
-        
-        if (distrito) {
-            subZonaSelect.innerHTML = generarOpcionesSubzona(distrito);
-            subZonaSelect.disabled = false;
-        }
-        
-        verificarHabilitarBoton();
+        btnIrSubzonas.disabled = !this.value;
     });
 
-    // Evento cambio de subzona
-    subZonaSelect.addEventListener('change', function() {
-        subzonaSeleccionada = this.value;
-        verificarHabilitarBoton();
-    });
-
-    // Botón iniciar
-    btnIniciar.addEventListener('click', function() {
+    // Ir a subzonas
+    btnIrSubzonas.addEventListener('click', function() {
         const distrito = distritoSelect.value;
-        const subzona = subZonaSelect.value;
-        
-        if (!distrito || !subzona) {
-            alert('Por favor, seleccione distrito y subzona');
+        if (!distrito) {
+            alert('Por favor, seleccione un distrito');
             return;
         }
         
-        // Obtener datos adicionales
-        const selectedOption = subZonaSelect.options[subZonaSelect.selectedIndex];
-        const subzonaId = selectedOption.dataset.id;
-        const subzonaZona = selectedOption.dataset.zona;
+        // Guardar distrito en sessionStorage
+        sessionStorage.setItem('distritoEncuesta', distrito);
+        
+        // Ir a la página de subzonas
+        window.location.href = 'subzonas.html';
+    });
+}
+
+// ===== PASO 2: INICIALIZAR PÁGINA DE SUBZONAS =====
+function initPaginaSubzonas() {
+    console.log('📄 Inicializando página de subzonas...');
+    
+    // Obtener distrito guardado
+    const distrito = sessionStorage.getItem('distritoEncuesta');
+    
+    if (!distrito || !distritosData[distrito]) {
+        alert('No se ha seleccionado un distrito. Volviendo al inicio...');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    // Mostrar nombre del distrito en el header
+    const distritoActualElem = document.getElementById('distritoActual');
+    if (distritoActualElem) {
+        distritoActualElem.textContent = distrito;
+    }
+    
+    // Generar listado de subzonas
+    const listadoContainer = document.getElementById('listadoSubzonas');
+    const btnContinuar = document.getElementById('btnContinuarEncuesta');
+    
+    if (!listadoContainer || !btnContinuar) {
+        console.error('❌ No se encontraron los contenedores necesarios');
+        return;
+    }
+    
+    const subzonas = distritosData[distrito].subzonas;
+    
+    // Agrupar por zona
+    const grupos = {};
+    subzonas.forEach(sub => {
+        if (!grupos[sub.zona]) grupos[sub.zona] = [];
+        grupos[sub.zona].push(sub);
+    });
+    
+    // Orden de zonas: urbanas primero (por orientación), luego rurales
+    const ordenZonas = [
+        'RADIO URBANO NORTE',
+        'RADIO URBANO CENTRO',
+        'RADIO URBANO SUR',
+        'RADIO URBANO ESTE',
+        'RADIO URBANO OESTE',
+        'RURAL'
+    ];
+    
+    let html = '';
+    
+    ordenZonas.forEach(zona => {
+        if (grupos[zona] && grupos[zona].length > 0) {
+            // Header del grupo
+            let label = zona;
+            let emoji = '📍';
+            let colorClass = 'zona-rural';
+            
+            if (zona.includes('RADIO URBANO')) {
+                const orient = zona.replace('RADIO URBANO ', '');
+                emoji = { 'NORTE': '⬆️', 'SUR': '⬇️', 'ESTE': '➡️', 'OESTE': '⬅️', 'CENTRO': '🎯' }[orient] || '📍';
+                colorClass = `zona-urbana zona-${orient.toLowerCase()}`;
+                label = `${emoji} ${zona}`;
+            } else {
+                emoji = '🌾';
+                label = `${emoji} ZONA RURAL`;
+            }
+            
+            html += `<div class="grupo-zona ${colorClass}">`;
+            html += `<h3 class="grupo-titulo">${label}</h3>`;
+            html += `<div class="subzonas-listado">`;
+            
+            grupos[zona].forEach(sub => {
+                let displayName = `<span class="subzona-id">${sub.id}</span> ${sub.name}`;
+                if (sub.orientacion) {
+                    displayName += ` <span class="subzona-orient">(${sub.orientacion})</span>`;
+                }
+                
+                html += `
+                    <label class="subzona-opcion" data-id="${sub.id}" data-zona="${sub.zona}" data-name="${sub.name}">
+                        <input type="radio" name="subzonaSeleccionada" value="${sub.name}">
+                        <span class="subzona-texto">${displayName}</span>
+                    </label>
+                `;
+            });
+            
+            html += `</div></div>`;
+        }
+    });
+    
+    listadoContainer.innerHTML = html;
+    
+    // Evento de selección de subzona
+    document.querySelectorAll('input[name="subzonaSeleccionada"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Quitar clase seleccionada de todos
+            document.querySelectorAll('.subzona-opcion').forEach(el => {
+                el.classList.remove('seleccionada');
+            });
+            
+            // Marcar la seleccionada
+            this.closest('.subzona-opcion').classList.add('seleccionada');
+            
+            // Habilitar botón continuar
+            btnContinuar.disabled = false;
+        });
+    });
+    
+    // Botón continuar
+    btnContinuar.addEventListener('click', function() {
+        const seleccionada = document.querySelector('input[name="subzonaSeleccionada"]:checked');
+        
+        if (!seleccionada) {
+            alert('Por favor, seleccione una subzona');
+            return;
+        }
+        
+        const labelPadre = seleccionada.closest('.subzona-opcion');
+        const subzonaId = labelPadre.dataset.id;
+        const subzonaZona = labelPadre.dataset.zona;
+        const subzonaNombre = labelPadre.dataset.name;
         
         // Guardar en sessionStorage
-        sessionStorage.setItem('distritoEncuesta', distrito);
-        sessionStorage.setItem('subzonaEncuesta', subzona);
+        sessionStorage.setItem('subzonaEncuesta', subzonaNombre);
         sessionStorage.setItem('subzonaId', subzonaId);
         sessionStorage.setItem('subzonaZona', subzonaZona);
         
+        // Generar número de encuesta
         const numEncuesta = cargarNumeroEncuesta();
         sessionStorage.setItem('numeroEncuesta', numEncuesta.toString());
         
+        // Ir a la encuesta
         window.location.href = 'encuesta.html';
     });
-
-    verificarHabilitarBoton();
 }
 
-// ===== VERIFICAR BOTÓN =====
-function verificarHabilitarBoton() {
-    const distritoSelect = document.getElementById('distritoPrincipal');
-    const subZonaSelect = document.getElementById('subZona');
-    const btnIniciar = document.getElementById('btnIniciarEncuesta');
-    
-    if (!distritoSelect || !subZonaSelect || !btnIniciar) return;
-    
-    btnIniciar.disabled = !(distritoSelect.value && subZonaSelect.value);
-}
-
-// ===== INICIALIZAR PÁGINA DE ENCUESTA =====
+// ===== PASO 3: INICIALIZAR PÁGINA DE ENCUESTA =====
 function initPaginaEncuesta() {
     console.log('📄 Inicializando página de encuesta...');
     
@@ -308,6 +339,10 @@ function initPaginaEncuesta() {
         subzonaElem.textContent = text;
     }
     if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
+
+    // Mostrar nombre del distrito en la pregunta 13
+    const nombreDistritoObras = document.getElementById('nombreDistritoObras');
+    if (nombreDistritoObras) nombreDistritoObras.textContent = distrito;
 
     // Cargar obras según distrito
     cargarObrasDistrito(distrito);
@@ -354,7 +389,6 @@ function cargarObrasDistrito(distrito) {
     const obras = obrasPorDistrito[distrito] || [];
     
     if (obras.length === 0) {
-        // Distritos sin obras cargadas (12 de Octubre, El Marcado)
         container.innerHTML = `
             <p style="color: #95a5a6; font-style: italic; padding: 15px; background: #f8f9fa; border-radius: 6px;">
                 ℹ️ Las obras para este distrito aún no están cargadas.
@@ -393,8 +427,7 @@ function validarFormulario() {
         'sexo': 'Sexo',
         'edad': 'Rango etario',
         'p10': 'Pregunta 10',
-        'p11': 'Pregunta 11',
-        'p13': 'Pregunta 13 (obra del distrito)'
+        'p11': 'Pregunta 11'
     };
     
     // Solo validar p13 si hay obras cargadas
@@ -505,9 +538,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const path = window.location.pathname;
     
-    if (path.includes('encuesta.html')) {
+    if (path.includes('subzonas.html')) {
+        console.log('📄 Página: subzonas.html');
+        initPaginaSubzonas();
+    } else if (path.includes('encuesta.html')) {
+        console.log('📄 Página: encuesta.html');
         initPaginaEncuesta();
     } else if (path.includes('gracias.html')) {
+        console.log('📄 Página: gracias.html');
         const distrito = sessionStorage.getItem('distritoEncuesta') || '-';
         const subzona = sessionStorage.getItem('subzonaEncuesta') || '-';
         const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
@@ -520,9 +558,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (subzonaElem) subzonaElem.textContent = subzona;
         if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
     } else {
-        initPaginaPrincipal();
+        console.log('📄 Página: index.html');
+        initPaginaDistrito();
     }
 });
 
 // Exponer funciones globales
 window.volverAlInicio = volverAlInicio;
+window.volverAlDistrito = volverAlDistrito;
