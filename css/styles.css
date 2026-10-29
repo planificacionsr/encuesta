@@ -600,3 +600,180 @@ textarea:focus {
 ::-webkit-scrollbar-thumb:hover {
     background: #1a5276;
 }
+
+/* ===== PÁGINA DE SUBZONAS ===== */
+.subzona-header {
+    margin-bottom: 20px;
+}
+
+.subzona-header h2 {
+    margin-bottom: 10px;
+}
+
+.distrito-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #1a5276, #2e86c1);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    box-shadow: 0 2px 8px rgba(46, 134, 193, 0.3);
+}
+
+.distrito-badge strong {
+    font-weight: 700;
+}
+
+.subzona-intro {
+    margin-bottom: 20px;
+    padding: 12px;
+    background: #ecf0f1;
+    border-radius: 6px;
+    color: #2c3e50;
+}
+
+/* ===== GRUPOS DE ZONAS ===== */
+.grupo-zona {
+    margin-bottom: 25px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.grupo-titulo {
+    padding: 12px 20px;
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Colores por tipo de zona */
+.zona-urbana .grupo-titulo {
+    background: #2e86c1;
+}
+
+.zona-norte .grupo-titulo {
+    background: #3498db;
+}
+
+.zona-sur .grupo-titulo {
+    background: #9b59b6;
+}
+
+.zona-este .grupo-titulo {
+    background: #e67e22;
+}
+
+.zona-oeste .grupo-titulo {
+    background: #c0392b;
+}
+
+.zona-centro .grupo-titulo {
+    background: #16a085;
+}
+
+.zona-rural .grupo-titulo {
+    background: #27ae60;
+}
+
+.subzonas-listado {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 0 0 8px 8px;
+    border: 2px solid #ecf0f1;
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ===== OPCIONES DE SUBZONA ===== */
+.subzona-opcion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: white;
+    border: 2px solid #ecf0f1;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.subzona-opcion:hover {
+    border-color: #2e86c1;
+    background: #f7f9fa;
+    transform: translateX(3px);
+}
+
+.subzona-opcion.seleccionada {
+    background: #e3f2fd;
+    border-color: #2e86c1;
+    box-shadow: 0 2px 8px rgba(46, 134, 193, 0.2);
+}
+
+.subzona-opcion input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    flex-shrink: 0;
+    accent-color: #2e86c1;
+}
+
+.subzona-texto {
+    flex: 1;
+    font-size: 1em;
+    color: #2c3e50;
+}
+
+.subzona-id {
+    display: inline-block;
+    background: #2e86c1;
+    color: white;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.85em;
+    margin-right: 6px;
+}
+
+.subzona-orient {
+    display: inline-block;
+    background: #ecf0f1;
+    color: #7f8c8d;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+/* Botón continuar */
+#btnContinuarEncuesta {
+    flex: 2;
+}
+
+/* Responsive para subzonas */
+@media (max-width: 600px) {
+    .subzona-opcion {
+        padding: 10px 12px;
+    }
+    
+    .subzona-texto {
+        font-size: 0.9em;
+    }
+    
+    .grupo-titulo {
+        font-size: 1em;
+        padding: 10px 15px;
+    }
+    
+    .distrito-badge {
+        font-size: 1em;
+        padding: 8px 15px;
+    }
+}
