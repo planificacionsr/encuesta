@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Subzona</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Encuesta de Percepción Vecinal</h1>
+            <p>Municipalidad de Santa Rosa</p>
+        </header>
+
+        <div class="card">
+            <div class="subzona-header">
+                <h2>Paso 2: Seleccionar Subzona</h2>
+                <div class="distrito-badge">
+                    🏛️ Distrito: <strong id="distritoActual">-</strong>
+                </div>
+            </div>
+
+            <div class="subzona-intro">
+                <p>Seleccione una subzona del listado:</p>
+            </div>
+
+            <!-- Listado de subzonas (se llena desde JS) -->
+            <div id="listadoSubzonas"></div>
+
+            <div class="form-actions">
+                <button onclick="volverAlDistrito()" class="btn-volver">
+                    ⬅ Volver a distritos
+                </button>
+                <button id="btnContinuarEncuesta" class="btn-primary" disabled>
+                    Continuar a la encuesta →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/encuesta.js"></script>
+</body>
+</html>
