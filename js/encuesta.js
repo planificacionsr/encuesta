@@ -1,6 +1,15 @@
 // ===== CONFIGURACIÓN =====
 const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby5PZXTs5sfuO0Y6ZpGUvl3aQPBEtrkyp-X_M38YVSjjwcDmNdEJLddjivNnE8wGnSW/exec';
 
+// ===== MAPEO DE DISTRITOS A PÁGINAS =====
+const paginasSubzonas = {
+    'Las Catitas': 'subzonas-lascatitas.html',
+    'La Dormida': 'subzonas-ladormida.html',
+    'Villa Cabecera': 'subzonas-villacabecera.html',
+    '12 de Octubre': 'subzonas-doceoctubre.html',
+    'El Marcado': 'subzonas-elmarcado.html'
+};
+
 // ===== DATOS DE DISTRITOS Y SUBZONAS =====
 const distritosData = {
     '12 de Octubre': {
@@ -113,8 +122,21 @@ const obrasPorDistrito = {
         'Remodelación Paseo Vendimia y Monumento Cruz Blanca',
         'Recambio a led y nuevas luminarias'
     ],
-    '12 de Octubre': [],
-    'El Marcado': []
+    '12 de Octubre': [
+        'Repavimentación de Ruta Provincial 50',
+        'Construcción Plazoleta Divina Misericordia',
+        'Remodelación Plaza Juan Pablo II',
+        'Remodelación Paseo 25 de Mayo',
+        'Extensión de red de agua (El Divisadero)',
+        'Ampliación CIC 12 de Octubre',
+        'Instalación de garitas y cartelería'
+    ],
+    'El Marcado': [
+        'Remodelación y ampliación Centro de Salud El Marcado',
+        'Remodelación Plaza Manuel Belgrano',
+        'Instalación de garitas y cartelería',
+        'Recambio a led y nuevas luminarias'
+    ]
 };
 
 // ===== VARIABLES GLOBALES =====
@@ -134,7 +156,13 @@ function volverAlDistrito() {
 
 function volverAlInicio() {
     if (confirm('¿Estás seguro de que quieres volver? Los datos del formulario se perderán.')) {
-        window.location.href = 'index.html';
+        // Volver a la página de subzonas del distrito seleccionado
+        const distrito = sessionStorage.getItem('distritoEncuesta');
+        if (distrito && paginasSubzonas[distrito]) {
+            window.location.href = paginasSubzonas[distrito];
+        } else {
+            window.location.href = 'index.html';
+        }
     }
 }
 
@@ -174,8 +202,13 @@ function initPaginaDistrito() {
         // Guardar distrito en sessionStorage
         sessionStorage.setItem('distritoEncuesta', distrito);
         
-        // Ir a la página de subzonas
-        window.location.href = 'subzonas.html';
+        // Ir a la página específica del distrito
+        const pagina = paginasSubzonas[distrito];
+        if (pagina) {
+            window.location.href = pagina;
+        } else {
+            alert('Error: No se encontró la página para este distrito');
+        }
     });
 }
 
@@ -183,22 +216,7 @@ function initPaginaDistrito() {
 function initPaginaSubzonas() {
     console.log('📄 Inicializando página de subzonas...');
     
-    // Obtener distrito guardado
-    const distrito = sessionStorage.getItem('distritoEncuesta');
-    
-    if (!distrito || !distritosData[distrito]) {
-        alert('No se ha seleccionado un distrito. Volviendo al inicio...');
-        window.location.href = 'index.html';
-        return;
-    }
-    
-    // Mostrar nombre del distrito en el header
-    const distritoActualElem = document.getElementById('distritoActual');
-    if (distritoActualElem) {
-        distritoActualElem.textContent = distrito;
-    }
-    
-    // Generar listado de subzonas
+    // Obtener el contenedor y el distrito desde el atributo data
     const listadoContainer = document.getElementById('listadoSubzonas');
     const btnContinuar = document.getElementById('btnContinuarEncuesta');
     
@@ -206,6 +224,18 @@ function initPaginaSubzonas() {
         console.error('❌ No se encontraron los contenedores necesarios');
         return;
     }
+    
+    // Obtener el distrito desde el atributo data-distrito
+    const distrito = listadoContainer.dataset.distrito;
+    
+    if (!distrito || !distritosData[distrito]) {
+        alert('Error: Distrito no válido');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    // Guardar distrito en sessionStorage (por si acaso)
+    sessionStorage.setItem('distritoEncuesta', distrito);
     
     const subzonas = distritosData[distrito].subzonas;
     
@@ -230,7 +260,6 @@ function initPaginaSubzonas() {
     
     ordenZonas.forEach(zona => {
         if (grupos[zona] && grupos[zona].length > 0) {
-            // Header del grupo
             let label = zona;
             let emoji = '📍';
             let colorClass = 'zona-rural';
@@ -272,15 +301,10 @@ function initPaginaSubzonas() {
     // Evento de selección de subzona
     document.querySelectorAll('input[name="subzonaSeleccionada"]').forEach(radio => {
         radio.addEventListener('change', function() {
-            // Quitar clase seleccionada de todos
             document.querySelectorAll('.subzona-opcion').forEach(el => {
                 el.classList.remove('seleccionada');
             });
-            
-            // Marcar la seleccionada
             this.closest('.subzona-opcion').classList.add('seleccionada');
-            
-            // Habilitar botón continuar
             btnContinuar.disabled = false;
         });
     });
@@ -299,16 +323,13 @@ function initPaginaSubzonas() {
         const subzonaZona = labelPadre.dataset.zona;
         const subzonaNombre = labelPadre.dataset.name;
         
-        // Guardar en sessionStorage
         sessionStorage.setItem('subzonaEncuesta', subzonaNombre);
         sessionStorage.setItem('subzonaId', subzonaId);
         sessionStorage.setItem('subzonaZona', subzonaZona);
         
-        // Generar número de encuesta
         const numEncuesta = cargarNumeroEncuesta();
         sessionStorage.setItem('numeroEncuesta', numEncuesta.toString());
         
-        // Ir a la encuesta
         window.location.href = 'encuesta.html';
     });
 }
@@ -322,7 +343,6 @@ function initPaginaEncuesta() {
     const subzonaZona = sessionStorage.getItem('subzonaZona') || '';
     const numEncuesta = sessionStorage.getItem('numeroEncuesta') || '001';
     
-    // Mostrar info en el header
     const distritoElem = document.getElementById('distritoSeleccionado');
     const subzonaElem = document.getElementById('subzonaSeleccionada');
     const numElem = document.getElementById('numeroEncuesta');
@@ -340,14 +360,11 @@ function initPaginaEncuesta() {
     }
     if (numElem) numElem.textContent = `#${String(numEncuesta).padStart(3, '0')}`;
 
-    // Mostrar nombre del distrito en la pregunta 13
     const nombreDistritoObras = document.getElementById('nombreDistritoObras');
     if (nombreDistritoObras) nombreDistritoObras.textContent = distrito;
 
-    // Cargar obras según distrito
     cargarObrasDistrito(distrito);
 
-    // Mostrar pregunta abierta
     const preguntasCalificacion = ['p2', 'p4', 'p5'];
     preguntasCalificacion.forEach(id => {
         document.querySelectorAll(`input[name="${id}"]`).forEach(radio => {
@@ -360,7 +377,6 @@ function initPaginaEncuesta() {
         });
     });
 
-    // Mostrar/ocultar bloque 2
     document.querySelectorAll('input[name="p6"]').forEach(radio => {
         radio.addEventListener('change', function() {
             const continuacion = document.getElementById('bloque2Continuacion');
@@ -370,7 +386,6 @@ function initPaginaEncuesta() {
         });
     });
 
-    // Botón guardar
     const btnGuardar = document.getElementById('btnGuardar');
     if (btnGuardar) {
         btnGuardar.addEventListener('click', function() {
@@ -430,7 +445,6 @@ function validarFormulario() {
         'p11': 'Pregunta 11'
     };
     
-    // Solo validar p13 si hay obras cargadas
     const distrito = sessionStorage.getItem('distritoEncuesta');
     const obrasDisponibles = obrasPorDistrito[distrito] || [];
     if (obrasDisponibles.length > 0) {
@@ -538,8 +552,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const path = window.location.pathname;
     
-    if (path.includes('subzonas.html')) {
-        console.log('📄 Página: subzonas.html');
+    if (path.includes('subzonas-')) {
+        console.log('📄 Página: subzonas');
         initPaginaSubzonas();
     } else if (path.includes('encuesta.html')) {
         console.log('📄 Página: encuesta.html');
