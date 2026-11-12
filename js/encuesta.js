@@ -4,7 +4,7 @@
 
 // ===== CONFIGURACIÓN =====
 const CONFIG = {
-    urlScript: 'https://script.google.com/macros/s/AKfycby5PZXTs5sfuO0Y6ZpGUvl3aQPBEtrkyp-X_M38YVSjjwcDmNdEJLddjivNnE8wGnSW/exec',
+    urlScript: 'https://script.google.com/macros/s/AKfycby5PZXTs5sfuO0Y6ZpGUvl3aQPBEtrkyp-X_M38YVSjjwcDmNdEJLddjivNnE8wGnSW/exec',    
     clave: 'no1926', // Debe ser igual a CLAVE en Code.gs
     tiempoEsperaMs: 20000
 };
