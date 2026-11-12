@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta registrada</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-pagina="gracias">
+    <div class="container">
+        <header>
+            <h1>Encuesta de Percepción Vecinal</h1>
+            <p>Municipalidad de Santa Rosa</p>
+        </header>
+
+        <div class="card success">
+            <div id="avisoPendientes" class="aviso aviso--alerta hidden">
+                Hay <strong data-cantidad></strong> guardadas en este dispositivo sin enviar.
+                <button type="button" id="btnEnviarPendientes" class="btn-enlace">Enviar ahora</button>
+            </div>
+
+            <h2>Encuesta finalizada</h2>
+            <p id="estadoEnvio">Sus respuestas han sido registradas correctamente.</p>
+
+            <div class="info-box">
+                <p><strong>Número de encuesta:</strong> <span id="encuestaNumero">-</span></p>
+                <p><strong>Distrito:</strong> <span id="encuestaDistrito">-</span></p>
+                <p><strong>Subzona:</strong> <span id="encuestaSubzona">-</span></p>
+            </div>
+
+            <div class="acciones">
+                <a id="btnNueva" href="index.html" class="btn-primary">Nueva encuesta</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/encuesta.js"></script>
+</body>
+</html>

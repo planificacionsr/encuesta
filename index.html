@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Percepción Vecinal - Santa Rosa</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-pagina="index">
+    <div class="container">
+        <header>
+            <h1>Encuesta de Percepción Vecinal</h1>
+            <p>Municipalidad de Santa Rosa</p>
+        </header>
+
+        <div class="card">
+            <div id="avisoPendientes" class="aviso aviso--alerta hidden">
+                Hay <strong data-cantidad></strong> guardadas en este dispositivo sin enviar.
+                <button type="button" id="btnEnviarPendientes" class="btn-enlace">Enviar ahora</button>
+            </div>
+
+            <h2>Seleccionar distrito</h2>
+
+            <div class="form-group">
+                <label for="distritoPrincipal">Distrito</label>
+                <select id="distritoPrincipal" required>
+                    <option value="">Seleccione un distrito...</option>
+                </select>
+            </div>
+
+            <button id="btnIrSubzonas" class="btn-primary" disabled>Continuar</button>
+        </div>
+    </div>
+
+    <script src="js/encuesta.js"></script>
+</body>
+</html>

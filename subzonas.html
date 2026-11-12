@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar subzona</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-pagina="subzonas">
+    <div class="container">
+        <header>
+            <h1>Encuesta de Percepción Vecinal</h1>
+            <p>Municipalidad de Santa Rosa</p>
+        </header>
+
+        <div class="card">
+            <div id="avisoPendientes" class="aviso aviso--alerta hidden">
+                Hay <strong data-cantidad></strong> guardadas en este dispositivo sin enviar.
+                <button type="button" id="btnEnviarPendientes" class="btn-enlace">Enviar ahora</button>
+            </div>
+
+            <div id="errorEnlace" class="aviso aviso--alerta hidden">
+                El enlace no es válido. <a href="index.html">Elegir un distrito</a>
+            </div>
+
+            <div id="contenidoSubzonas">
+                <div class="subzona-header">
+                    <h2>Seleccionar subzona</h2>
+                    <div class="distrito-badge">
+                        Distrito: <strong id="distritoActual">-</strong>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="encuestador">Encuestador/a</label>
+                    <input type="text" id="encuestador" maxlength="60" placeholder="Nombre o código" autocomplete="off">
+                </div>
+
+                <div class="subzona-intro">
+                    <p>Seleccione una subzona del listado:</p>
+                </div>
+
+                <div id="listadoSubzonas"></div>
+
+                <div class="form-actions">
+                    <button id="btnContinuarEncuesta" class="btn-primary" disabled>Continuar a la encuesta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/encuesta.js"></script>
+</body>
+</html>
