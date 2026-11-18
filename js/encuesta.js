@@ -90,15 +90,13 @@ const DISTRITOS = {
     'villa-cabecera': {
         nombre: 'Villa Cabecera',
         subzonas: [
-            ['Centro Villa (Entre San Martín y Arenas)', 'O'],
-            ['Centro Villa (Entre Arenas y Alberdi)', 'O'],
+            ['Urbano Oeste', 'O'],
             ['B° Primavera', 'O'],
             ['Cuadro Estación', 'O'],
             ['Acceso Suárez', 'O'],
-            ['Centro Villa', 'E'],
+            ['Urbano Este', 'E'],
             ['SAAR', 'E'],
-            ['Angelino Arenas', 'E'],
-            ['Barrio Disperso', 'E'],
+            ['B° Arenas y Disperso', 'E'],
             ['La Costa', 'R'],
             ['B° Jardín (La Costa)', 'R'],
             ['B° Los Gringos y calle Unión', 'R'],
