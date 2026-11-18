@@ -95,6 +95,7 @@ const DISTRITOS = {
             ['Cuadro Estación', 'O'],
             ['Acceso Suárez', 'O'],
             ['Urbano Este', 'E'],
+            ['B° Las Trincheras', 'E'],
             ['SAAR', 'E'],
             ['B° Arenas y Disperso', 'E'],
             ['La Costa', 'R'],
